@@ -2,15 +2,27 @@
 import { useEffect, useState } from "react";
 import Head from "next/head";
 import Script from "next/script";
+import {SignedIn, SignedOut, SignInButton, SignUpButton} from "@clerk/nextjs";
 
 export default function Home() {
   return (
-    <div className=" min-h-screen w-full flex flex-col items-center justify-center">
-      <h1 className={"text-4xl text-center py-4"}>Welcome to the KLC Code IDE</h1>
-      <p className="text-2xl text-center">Sign In Now To Get Started</p>
-      <input placeholder={"Enter your email"} type={"email"} className="border-2 border-gray-300 text-black rounded-md p-2 mt-4 w-[400px]" />
-      <input placeholder={"Enter your password"} type={"password"} className="border-2 border-gray-300 text-black rounded-md p-2 mt-4 w-[400px]" />
+    <div className={"flex flex-col items-center justify-center min-h-screen py-2 "}>
+           <img className={"w-[300px]"} src={"/klc.png"}/>
+              <p className={"text-2xl py-4"}>Welcome to the KLC Code IDE</p>
+          <SignedOut>
+              <div className={"flex flex-row items-center justify-center gap-4"}>
+                  <SignInButton mode={"modal"} className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors font-semibold" />
+              <SignUpButton mode={"modal"} className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors font-semibold" />
+              </div>
+            </SignedOut>
+          <SignedIn>
 
-    </div>
+              <button className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors font-semibold" onClick={() => window.location.href = "/dashboard"}>
+  Go To Dashboard
+</button>
+          </SignedIn>
+
+
+      </div>
   );
 }
