@@ -6,7 +6,7 @@ import {SignedIn, SignedOut, SignInButton, SignUpButton} from "@clerk/nextjs";
 
 export default function Home() {
   return (
-    <div className={"flex flex-col items-center justify-center min-h-screen py-2 "}>
+    <div className={"flex flex-col items-center justify-center min-h-screen py-2 text-white"}>
            <img className={"w-[300px]"} src={"/klc.png"}/>
               <p className={"text-2xl py-4"}>Welcome to the KLC Code IDE</p>
           <SignedOut>
@@ -14,15 +14,13 @@ export default function Home() {
                   <SignInButton mode={"modal"} className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors font-semibold" />
               <SignUpButton mode={"modal"} className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors font-semibold" />
               </div>
-            </SignedOut>
+          </SignedOut>
           <SignedIn>
 
               <button className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors font-semibold" onClick={() => window.location.href = "/dashboard"}>
   Go To Dashboard
 </button>
           </SignedIn>
-
-
       </div>
   );
 }
