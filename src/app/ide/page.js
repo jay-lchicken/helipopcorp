@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from 'next/navigation';
 import Script from "next/script";
 import { SignedIn, SignedOut, useUser, SignInButton, SignUpButton } from "@clerk/nextjs";
 
-export default function IDEPage() {
+export default function IDE() {
+  const router = useRouter();
   const { isSignedIn } = useUser();
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
@@ -34,14 +36,15 @@ export default function IDEPage() {
     if (monacoRef.current) {
       const value = monacoRef.current.getValue();
       console.log("Submitted code:", value);
+      router.push('/ide/submitted');
     }
-  };
+  };  
 
   return (
     <>
       <Script src="https://cdn.jsdelivr.net/npm/monaco-editor/min/vs/loader.js" strategy="beforeInteractive" />
 
-      <div className="min-h-screen bg-[#01639A] text-white">
+      <div className="min-h-screen bg-[#00639A] text-white">
         <SignedOut>
           {/* Centered full-page layout for signed-out users */}
           <div className="flex items-center justify-center min-h-screen">
