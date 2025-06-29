@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 import { SignedIn, SignedOut, SignInButton, SignUpButton, useUser } from '@clerk/nextjs';
 
 export default function DashboardPage() {
@@ -16,6 +16,7 @@ export default function DashboardPage() {
     { title: "Move sprites in Scratch!", subtitle: "P2, Scratch" },
     { title: "Find the largest possible difference in the array of numbers given", subtitle: "P6, Python" }
   ]);
+
 
   return (
     <div className="min-h-screen bg-[#00639A] text-white px-6 py-8">
@@ -43,7 +44,8 @@ export default function DashboardPage() {
           }
           return (
             <>
-              <h1 className="text-2xl font-bold mb-6">Welcome back, {user?.fullName || 'Coder'} 👋</h1>
+              <h1 className="text-2xl font-bold mb-6 flex flex-row items-center gap-3">Welcome back, {user?.fullName || 'Coder'} 👋     <img src={user.imageUrl} alt={user.name} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full mr-3" />
+</h1>
 
 
 {/*         <div className="flex flex-wrap gap-2 mb-8">
