@@ -11,10 +11,6 @@ export default function DashboardPage() {
   const [level, setLevel] = useState('');
   const [subject, setSubject] = useState('');
   const [assignments, setAssignments] = useState([
-    { title: "Make a game using PyGame", subtitle: "P5, Python" },
-    { title: "Make a guessing game", subtitle: "P4, Scratch" },
-    { title: "Move sprites in Scratch!", subtitle: "P2, Scratch" },
-    { title: "Find the largest possible difference in the array of numbers given", subtitle: "P6, Python" }
   ]);
 
 
@@ -44,7 +40,7 @@ export default function DashboardPage() {
           }
           return (
             <>
-              <h1 className="text-2xl font-bold mb-6 flex flex-row items-center gap-3">Welcome back, {user?.fullName || 'Coder'} 👋     <img src={user.imageUrl} alt={user.name} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full mr-3" />
+              <h1 className="text-2xl font-bold mb-6 flex flex-row items-center gap-3">Welcome back, <img src={user.imageUrl} alt={user.name} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full" />{user?.fullName || 'Coder'} 👋
 </h1>
 
 
@@ -141,7 +137,6 @@ export default function DashboardPage() {
                 </div>
               )}
 
-              {/* Dynamic assignment list */}
               <div className="space-y-6">
                 <p className="text-sm text-white/60 mb-1">Recent assignments</p>
                 <ul className="space-y-2">

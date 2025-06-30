@@ -1,4 +1,4 @@
-import pool from '@/lib/prisma.js';
+import pool from "@/lib/db";
 
 export async function GET() {
   try {

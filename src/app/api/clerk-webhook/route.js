@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma"; // make sure this path matches your setup
 
 export async function POST(req) {
   const body = await req.json();
