@@ -116,16 +116,34 @@ export default function DashboardPage() {
                       <button
                         onClick={() => {
                           if (!newTitle.trim()) return;
-                          setAssignments([
+                          //DO API REQUEST
+
+                          fetch("/api/NewAssignment", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    name: newTitle,
+  }),
+})
+                              .then((data) => {
+            if (data.error) {
+              alert("Failed to toggle public/private: " + data.error);
+            } else {
+              setAssignments([
                             ...assignments,
                             {
                               title: newTitle,
                               subtitle: (level && subject) ? `${level}, ${subject}` : "P?, Unknown",
                             },
                           ]);
+            }
+          })
+                          .then(res => res.json())
+
                           setNewTitle('');
-                          setLevel('');
-                          setSubject('');
+
                           setShowForm(false);
                         }}
                         className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
