@@ -1,6 +1,6 @@
 'use client';
 
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import { SignedIn, SignedOut, SignInButton, SignUpButton, useUser } from '@clerk/nextjs';
 
 export default function DashboardPage() {
@@ -10,9 +10,7 @@ export default function DashboardPage() {
   const [newTitle, setNewTitle] = useState('');
   const [level, setLevel] = useState('');
   const [subject, setSubject] = useState('');
-  const [assignments, setAssignments] = useState([
-  ]);
-
+  const [assignments, setAssignments] = useState([]);
 
   return (
     <div className="min-h-screen bg-[#00639A] text-white px-6 py-8">
@@ -34,145 +32,137 @@ export default function DashboardPage() {
       </SignedOut>
 
       <SignedIn>
-        {(() => {
-          if (!user) {
-            return <div className="text-white text-center py-8">Loading your dashboard...</div>;
-          }
-          return (
-            <>
-              <h1 className="text-2xl font-bold mb-6 flex flex-row items-center gap-3">Welcome back, <img src={user.imageUrl} alt={user.name} className="w-8 h-8 sm:w-10 sm:h-10 rounded-full" />{user?.fullName || 'Coder'} 👋
-</h1>
+        {!user ? (
+          <div className="text-white text-center py-8">Loading your dashboard...</div>
+        ) : (
+          <>
+            <h1 className="text-2xl font-bold mb-6 flex flex-row items-center gap-3">
+              Welcome back,{" "}
+              <img
+                src={user.imageUrl}
+                alt={user.name}
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full"
+              />
+              {user?.fullName || 'Coder'} 👋
+            </h1>
 
+            {/* Assignments Section */}
+            <div className="flex items-center gap-3 mb-4">
+              <h2 className="text-xl font-semibold">Assignments</h2>
+              <button
+                onClick={() => setShowForm(true)}
+                className="bg-white/20 hover:bg-white/30 text-white text-sm font-medium px-4 py-1 rounded-full transition"
+              >
+                + Add
+              </button>
+            </div>
 
-{/*         <div className="flex flex-wrap gap-2 mb-8">
-          <span className="bg-white/20 text-white px-4 py-1 rounded-full font-medium">Primary schools</span>
-          <span className="bg-white/20 text-white px-4 py-1 rounded-full font-medium">Secondary schools</span>
-          <span className="bg-white/20 text-white px-4 py-1 rounded-full font-medium">Python</span>
-          <span className="bg-white/20 text-white px-4 py-1 rounded-full font-medium">Scratch</span>
-          <span className="bg-white/20 text-white px-4 py-1 rounded-full font-medium">C++</span>
-          <span className="bg-white/20 text-white px-4 py-1 rounded-full font-medium">Web dev</span>
-        </div> */}
+            {/* Assignment Form */}
+            {showForm && (
+              <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+                <div className="bg-[#004e7a] p-6 rounded-lg shadow-xl w-[90%] max-w-md">
+                  <h3 className="text-lg font-semibold mb-4">Add New Assignment</h3>
+                  
+                  <input
+                    type="text"
+                    placeholder="Assignment title"
+                    value={newTitle}
+                    onChange={(e) => setNewTitle(e.target.value)}
+                    className="w-full px-3 py-2 mb-3 rounded bg-white/10 text-white placeholder-white/50 outline-none"
+                  />
+                  
+                  <div className="flex gap-2 mb-4">
+                    <select
+                      value={level}
+                      onChange={(e) => setLevel(e.target.value)}
+                      className="w-1/2 px-3 py-2 rounded bg-white/10 text-white outline-none"
+                    >
+                      <option value="">Select Level</option>
+                      {["P1", "P2", "P3", "P4", "P5", "P6", "S1", "S2", "S3", "S4"].map((lvl) => (
+                        <option key={lvl} value={lvl}>{lvl}</option>
+                      ))}
+                    </select>
 
-              {/* Assignments header with + button */}
-              <div className="flex items-center gap-3 mb-4">
-                <h2 className="text-xl font-semibold">Assignments</h2>
-                <button
-                  onClick={() => setShowForm(true)}
-                  className="bg-white/20 hover:bg-white/30 text-white text-sm font-medium px-4 py-1 rounded-full transition"
-                >
-                  + Add
-                </button>
-              </div>
+                    <select
+                      value={subject}
+                      onChange={(e) => setSubject(e.target.value)}
+                      className="w-1/2 px-3 py-2 rounded bg-white/10 text-white outline-none"
+                    >
+                      <option value="">Select Subject</option>
+                      {["Python", "C++", "Web", "Scratch", "Others"].map((subj) => (
+                        <option key={subj} value={subj}>{subj}</option>
+                      ))}
+                    </select>
+                  </div>
 
-              {showForm && (
-                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-                  <div className="bg-[#004e7a] p-6 rounded-lg shadow-xl w-[90%] max-w-md">
-                    <h3 className="text-lg font-semibold mb-4">Add New Assignment</h3>
-                    <input
-                      type="text"
-                      placeholder="Assignment title"
-                      value={newTitle}
-                      onChange={(e) => setNewTitle(e.target.value)}
-                      className="w-full px-3 py-2 mb-3 rounded bg-white/10 text-white placeholder-white/50 outline-none"
-                    />
-                    <div className="flex gap-2 mb-4">
-                      <select
-                        value={level}
-                        onChange={(e) => setLevel(e.target.value)}
-                        className="w-1/2 px-3 py-2 rounded bg-white/10 text-white placeholder-white/50 outline-none"
-                      >
-                        <option value="">Select Level</option>
-                        <option value="P1">P1</option>
-                        <option value="P2">P2</option>
-                        <option value="P3">P3</option>
-                        <option value="P4">P4</option>
-                        <option value="P5">P5</option>
-                        <option value="P6">P6</option>
-                        <option value="S1">S1</option>
-                        <option value="S2">S2</option>
-                        <option value="S3">S3</option>
-                        <option value="S4">S4</option>
-                      </select>
-                      <select
-                        value={subject}
-                        onChange={(e) => setSubject(e.target.value)}
-                        className="w-1/2 px-3 py-2 rounded bg-white/10 text-white placeholder-white/50 outline-none"
-                      >
-                        <option value="">Select Subject</option>
-                        <option value="Python">Python</option>
-                        <option value="C++">C++</option>
-                        <option value="Web">Web</option>
-                        <option value="Scratch">Scratch</option>
-                        <option value="Others">Others</option>
-                      </select>
-                    </div>
-                    <div className="flex justify-end gap-2">
-                      <button
-                        onClick={() => setShowForm(false)}
-                        className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={() => {
-                          if (!newTitle.trim()) return;
-                          //DO API REQUEST
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={() => setShowForm(false)}
+                      className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+                    >
+                      Cancel
+                    </button>
 
-                          fetch("/api/NewAssignment", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    name: newTitle,
-  }),
-})
-                              .then((data) => {
-            if (data.error) {
-              alert("Failed to toggle public/private: " + data.error);
-            } else {
-              setAssignments([
-                            ...assignments,
+                    <button
+                      onClick={async () => {
+                        if (!newTitle.trim()) return;
+                        const res = await fetch("/api/NewAssignment", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            name: newTitle,
+                            level,
+                            subject,
+                            userId: user.id,
+                            email: user.primaryEmailAddress?.emailAddress,
+                          }),
+                        });
+
+                        const data = await res.json();
+
+                        if (data.error) {
+                          alert("Error adding assignment: " + data.error);
+                        } else {
+                          setAssignments((prev) => [
+                            ...prev,
                             {
                               title: newTitle,
-                              subtitle: (level && subject) ? `${level}, ${subject}` : "P?, Unknown",
+                              subtitle: level && subject ? `${level}, ${subject}` : "P?, Unknown",
                             },
                           ]);
-            }
-          })
-                          .then(res => res.json())
-
                           setNewTitle('');
-
+                          setLevel('');
+                          setSubject('');
                           setShowForm(false);
-                        }}
-                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                      >
-                        Add
-                      </button>
-                    </div>
+                        }
+                      }}
+                      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    >
+                      Add
+                    </button>
                   </div>
                 </div>
-              )}
-
-              <div className="space-y-6">
-                <p className="text-sm text-white/60 mb-1">Recent assignments</p>
-                <ul className="space-y-2">
-                  {assignments.map((a, i) => (
-                    <li key={i} className="p-4 bg-white/10 rounded-lg">
-                      {a.title} <br />
-                      <span className="text-sm text-white/70">
-                        {a.subtitle === "P?, Unknown"
-                          ? "[Unspecified Level], [Unspecified Subject]"
-                          : `[${a.subtitle}]`}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
               </div>
-            </>
-          );
-        })()}
+            )}
+
+            {/* Assignment List */}
+            <div className="space-y-6">
+              <p className="text-sm text-white/60 mb-1">Recent assignments</p>
+              <ul className="space-y-2">
+                {assignments.map((a, i) => (
+                  <li key={i} className="p-4 bg-white/10 rounded-lg">
+                    {a.title} <br />
+                    <span className="text-sm text-white/70">
+                      {a.subtitle === "P?, Unknown"
+                        ? "[Unspecified Level], [Unspecified Subject]"
+                        : `[${a.subtitle}]`}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </>
+        )}
       </SignedIn>
     </div>
   );

@@ -1,6 +1,8 @@
 import { getAuth } from "@clerk/nextjs/server";
+import { clerkClient } from "@clerk/clerk-sdk-node";
 import pool from "@/lib/db";
 import { NextResponse } from "next/server";
+
 
 export async function GET(request) {
   const { userId, sessionClaims } = getAuth(request);
@@ -11,7 +13,13 @@ export async function GET(request) {
 
   console.log("sessionClaims:", sessionClaims);
 
-  const email = sessionClaims?.email;
+  let email = sessionClaims?.email;
+
+  // Fallback: fetch email from Clerk API if not in sessionClaims
+  if (!email) {
+    const clerkUser = await clerkClient.users.getUser(userId);
+    email = clerkUser?.emailAddresses?.[0]?.emailAddress;
+  }
 
   const result = await pool.query(
     `SELECT * FROM users WHERE clerkId = $1`,
@@ -24,7 +32,7 @@ export async function GET(request) {
 
   if (!dbUser) {
     const teacherDomain = "@s2024.ssts.edu.sg";
-    const role = email.endsWith(teacherDomain) ? "teacher" : "student";
+    const role = email?.endsWith(teacherDomain) ? "teacher" : "student";
 
     const insertResult = await pool.query(
       `INSERT INTO users (clerkId, email, role)
