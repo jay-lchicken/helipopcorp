@@ -6,13 +6,16 @@ import TeacherDashboardPage from "@/app/dashboard/Dashboard";
 import StudentDashboardPage from "@/app/dashboard/StudentDashboard";
 import Home from "@/app/Home";
 import { redirect } from "next/navigation";
+import {icssParser} from "next/dist/build/webpack/loaders/css-loader/src/plugins";
 
 export default async function Main() {
     const { userId } = await auth();
     let assignments = [];
 
 
-    redirect("/");
+    if (!userId){
+        redirect("/");
+    }
     try {
         const cookieStore = cookies();
 

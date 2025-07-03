@@ -26,7 +26,7 @@ export default function Home({DBUser}) {
           <div className={"flex flex-row items-center justify-center gap-4"}>
             <button
               className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors font-semibold"
-              onClick={() => window.location.href = "/student-dashboard"}
+              onClick={() => window.location.href = "/dashboard"}
             >
               Go to dashboard
             </button>
