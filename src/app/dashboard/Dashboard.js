@@ -3,7 +3,7 @@
 import {useEffect, useState} from 'react';
 import {SignedIn, SignedOut, SignInButton, SignUpButton, useUser} from '@clerk/nextjs';
 
-export default function DashboardPage({serverAssignments}) {
+export default function TeacherDashboardPage({serverAssignments}) {
     const {user} = useUser();
 
     const [showForm, setShowForm] = useState(false);
