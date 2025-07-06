@@ -19,9 +19,11 @@ export async function GET(req) {
             "SELECT * FROM assignments WHERE hash_userid_email = $1",
             [hash_userid_email]
         );
+        console.log("User is not an admin")
         return NextResponse.json(assignments.rows);
     } else {
       const assignments = await pool.query("SELECT * FROM assignments");
+      console.log("User is an admin")
       return NextResponse.json(assignments.rows);
     }
   } catch (error) {

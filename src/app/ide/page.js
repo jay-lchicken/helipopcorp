@@ -11,42 +11,65 @@ export default function IDE() {
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
   const [isEditorLoaded, setIsEditorLoaded] = useState(false);
+  const [isScriptLoaded, setIsScriptLoaded] = useState(false);
 
   useEffect(() => {
-    if (!isSignedIn || isEditorLoaded || !editorRef.current) return;
+    if (!isSignedIn || isEditorLoaded || !editorRef.current || !isScriptLoaded) return;
 
-    setTimeout(() => {
-      window.require.config({
-        paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor/min/vs" },
+    window.require.config({
+      paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor/min/vs" },
+    });
+
+    window.require(["vs/editor/editor.main"], () => {
+      monacoRef.current = window.monaco.editor.create(editorRef.current, {
+        value: "// Welcome to KLC IDE\n",
+        language: "javascript",
+        theme: "vs-dark",
+        automaticLayout: true,
       });
+      setIsEditorLoaded(true);
+    });
+  }, [isSignedIn, isEditorLoaded, isScriptLoaded]);
 
-      window.require(["vs/editor/editor.main"], () => {
-        monacoRef.current = window.monaco.editor.create(editorRef.current, {
-          value: "// Welcome to KLC IDE\n",
-          language: "javascript",
-          theme: "vs-dark",
-          automaticLayout: true,
-        });
-        setIsEditorLoaded(true);
-      });
-    }, 300);
-  }, [isSignedIn, isEditorLoaded]);
+  async function submitToJudge0(code) {
+    const res = await fetch("/api/SubmitAssignment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ source_code: code, language_id: 63 }),
+    });
+  
+    const data = await res.json();
+    console.log("API response:", data);
+    return data;
+  }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (monacoRef.current) {
       const value = monacoRef.current.getValue();
       console.log("Submitted code:", value);
-      router.push('/ide/submitted');
+  
+      const res = await submitToJudge0(value);
+      if (res.stdout) {
+        console.log("Program Output:", res.stdout);
+      } else if (res.stderr) {
+        console.error("Program Error:", res.stderr);
+      } else {
+        console.warn("No output or error returned.");
+      }
     }
-  };  
+  };
 
   return (
     <>
-      <Script src="https://cdn.jsdelivr.net/npm/monaco-editor/min/vs/loader.js" strategy="beforeInteractive" />
+      <Script
+        src="https://cdn.jsdelivr.net/npm/monaco-editor/min/vs/loader.js"
+        onLoad={() => setIsScriptLoaded(true)}
+      />
 
       <div className="min-h-screen bg-[#00639A] text-white">
         <SignedOut>
-          {/* Centered full-page layout for signed-out users */}
           <div className="flex items-center justify-center min-h-screen">
             <div className="flex flex-col items-center text-center">
               <img className="w-[300px]" src="/klc.png" alt="KLC Logo" />
