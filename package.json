@@ -12,10 +12,12 @@
     "@clerk/clerk-sdk-node": "^4.13.23",
     "@clerk/nextjs": "^6.20.0",
     "@prisma/client": "^6.10.1",
+    "@xterm/xterm": "^5.5.0",
     "next": "^15.2.3",
     "pg": "^8.16.3",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "xterm": "^5.3.0"
   },
   "devDependencies": {
     "@types/react": "19.1.8",
