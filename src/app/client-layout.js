@@ -2,8 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { SignedIn, SignOutButton } from "@clerk/nextjs";
-import { ClerkProvider } from "@clerk/nextjs/dist/types/components.server";
-
+import {ClerkProvider} from "@clerk/nextjs";
 export default function ClientLayout({ children }) {
   const pathname = usePathname();
   const hideOnPaths = ["/", "/ide", "/ide/submitted"];
