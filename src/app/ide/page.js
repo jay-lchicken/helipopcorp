@@ -15,7 +15,7 @@ export default function IDE() {
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
   const [isTerminalReady, setIsTerminalReady] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   // Initialize Monaco editor
   useEffect(() => {
     if (!isSignedIn || isEditorLoaded || !editorRef.current || !isScriptLoaded) return;
@@ -36,7 +36,7 @@ export default function IDE() {
     });
   }, [isSignedIn, isEditorLoaded, isScriptLoaded, isTerminalReady]);
 
-  // Initialize xterm.js terminal once the container is ready
+  // Initialize xterm.js
   useEffect(() => {
     async function setupTerminal() {
       if (typeof window !== "undefined" && termRef.current && !xtermRef.current) {
@@ -48,7 +48,7 @@ export default function IDE() {
             background: "#1e1e1e",
             foreground: "#ffffff",
           },
-          disableStdin: true, // output only
+          disableStdin: true,
           fontFamily: '"Fira Mono", monospace',
           fontSize: 14,
         });
@@ -61,13 +61,10 @@ export default function IDE() {
     setupTerminal();
   }, [termRef, isEditorLoaded]);
 
-  // Send code to Judge0 API
   async function submitToJudge0(code) {
     const res = await fetch("/api/SubmitAssignment", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ source_code: code, language_id: 63 }),
     });
 
@@ -76,34 +73,27 @@ export default function IDE() {
     return data;
   }
 
-  // Helper to write to terminal, normalizing line endings
   const writeToTerminal = (text) => {
-    console.log("Writing to terminal:", text);
     xtermRef.current.write(text.replace(/\n/g, "\r\n"));
   };
 
-  // Handle submit: send code and display output in terminal
   const handleSubmit = async () => {
-    if (!isTerminalReady) {
-      console.error("Terminal is not ready yet");
-      return;
-    }
+    setIsSubmitting(true);
+    if (!isTerminalReady) return;
     if (monacoRef.current) {
       const value = monacoRef.current.getValue();
-      console.log("Submitted code:", value);
-
       const res = await submitToJudge0(value);
 
       xtermRef.current.clear();
+      
+    
 
-      if (res.stdout) {
-        writeToTerminal(res.stdout);
-      } else if (res.stderr) {
-        writeToTerminal(res.stderr);
-      } else {
-        writeToTerminal("No output returned from Judge0.");
-      }
+      if (res.stdout) writeToTerminal(res.stdout);
+      else if (res.stderr) writeToTerminal(res.stderr);
+      else writeToTerminal("No output returned from Judge0.");
+      setIsSubmitting(false);
     }
+    
   };
 
   return (
@@ -143,8 +133,13 @@ export default function IDE() {
             <div className="flex items-center justify-between w-full max-w-[1500px] mb-4">
               <img className="w-[300px]" src="/klc.png" alt="KLC Logo" />
               <button
-                disabled={!isTerminalReady}
-                className={`bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg shadow ${!isTerminalReady ? "opacity-50 cursor-not-allowed" : ""}`}
+                disabled={!isTerminalReady || isSubmitting}
+                className={`bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg shadow ${
+                  !isTerminalReady || isSubmitting ? "cursor-not-allowed" : ""
+                }`}
+                style={{
+                  opacity: !isTerminalReady || isSubmitting ? 0.5 : 1,
+                }}
                 onClick={handleSubmit}
               >
                 Submit Code

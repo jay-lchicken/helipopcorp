@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { SignedIn, SignOutButton } from "@clerk/nextjs";
+import { ClerkProvider } from "@clerk/nextjs/dist/types/components.server";
 
 export default function ClientLayout({ children }) {
   const pathname = usePathname();
@@ -10,6 +11,7 @@ export default function ClientLayout({ children }) {
 
   return (
     <>
+      <ClerkProvider>
       {shouldShowSignOut && (
         <SignedIn>
           <div className="absolute top-4 right-4 z-50">
@@ -22,6 +24,7 @@ export default function ClientLayout({ children }) {
         </SignedIn>
       )}
       {children}
+      </ClerkProvider>
     </>
   );
 }
