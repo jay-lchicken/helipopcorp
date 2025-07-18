@@ -15,13 +15,13 @@ export async function POST(req) {
     const hash = crypto.createHash('sha256').update(email+userId).digest('hex');
   try {
     const assignment = await pool.query(
-      `INSERT INTO assignments (name, level, subject, hash_userid_email)
-       VALUES ($1, $2, $3, $4)
-       RETURNING *`,
-      [name, level, subject, hash]
+        `DELETE FROM assignments
+         WHERE name = $1 AND level = $2 AND subject = $3 AND hash_userid_email = $4
+         RETURNING *`,
+        [name, level, subject, hash]
     );
-    console.log(assignment.rows[0]);
-    return Response.json(assignment.rows[0]);
+    console.log('Deleted rows:', assignment.rows);
+    return Response.json({ message: 'Assignment deleted successfully' });
   } catch (err) {
     console.error('DB error:', err);
     return new Response('Internal server error', { status: 500 });

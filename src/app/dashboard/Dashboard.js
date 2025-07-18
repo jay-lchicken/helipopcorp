@@ -13,6 +13,7 @@ export default function TeacherDashboardPage({serverAssignments}) {
     const [assignments, setAssignments] = useState(serverAssignments || []);
     const [isLoaded, setIsLoaded] = useState(false);
     const [isAddingAssignment, setIsAddingAssignment] = useState(false);
+    const [isDeletingAssignment, setIsDeletingAssignment] = useState(false);
 
     useEffect(() => {
         setIsLoaded(true);
@@ -117,7 +118,6 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                     </div>
                                 </div>
                             </div>
-
                         </div>
 
                         <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-2xl">
@@ -187,7 +187,38 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                                         </svg>
                                                     </button>
                                                     <button className="p-2 hover:bg-slate-600/50 rounded-lg transition-colors duration-200">
-                                                        <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <svg
+                                                        onClick={async () => {
+                                                            setIsDeletingAssignment(true);
+                                                            const res = await fetch("/api/DeleteAssignment", {
+                                                                method: "POST",
+                                                                headers: {"Content-Type": "application/json"},
+                                                                body: JSON.stringify({
+                                                                    name: assignment.name,
+                                                                    level: assignment.level,
+                                                                    subject: assignment.subject, 
+                                                                }),
+                                                            });
+
+                                                            const data = await res.json();
+
+                                                            if (data.error) {
+                                                                alert("Error adding assignment: " + data.error);
+                                                            } else {
+                                                                setAssignments((prev) => 
+                                                                    prev.filter((a) => 
+                                                                        !(
+                                                                            a.name === assignment.name
+                                                                            && a.level === assignment.level
+                                                                            && a.subject === assignment.subject
+                                                                        )
+                                                                    ),
+                                                                );
+                                                            }
+                                                            setIsDeletingAssignment(false);
+                                                            }}
+                                                            className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                         </svg>
                                                     </button>
@@ -288,8 +319,6 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                                 name: newTitle,
                                                 level,
                                                 subject,
-                                                userId: user.id,
-                                                email: user.primaryEmailAddress?.emailAddress,
                                             }),
                                         });
 
@@ -312,7 +341,7 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                             setSubject('');
                                             setShowForm(false);
                                         }
-                                                                                setIsAddingAssignment(true);
+                                        setIsAddingAssignment(false);
 
                                     }}
                                     className="group px-6 py-3 bg-gradient-to-r disabled:opacity-50 from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl relative overflow-hidden"
