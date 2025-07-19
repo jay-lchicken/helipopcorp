@@ -159,7 +159,11 @@ export default function TeacherDashboardPage({serverAssignments}) {
                             ) : (
                                 <div className="space-y-4">
                                     {assignments.map((assignment, index) => (
-                                        <div key={index} className="group bg-slate-700/30 border border-slate-600/30 rounded-xl p-6 hover:bg-slate-700/40 hover:border-slate-600/50 transition-all duration-300">
+                                        <div 
+                                        onClick={() => {
+                                            window.location.href = `/dashboard/${assignment.name}`;
+                                        }}
+                                        key={index} className="group bg-slate-700/30 border border-slate-600/30 rounded-xl p-6 hover:bg-slate-700/40 hover:border-slate-600/50 transition-all duration-300">
                                             <div className="flex items-start justify-between">
                                                 <div className="flex-1">
                                                     <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-blue-400 transition-colors duration-300">

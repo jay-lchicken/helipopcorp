@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Script from "next/script";
 import { SignedIn, SignedOut, useUser, SignInButton, SignUpButton } from "@clerk/nextjs";
 import "xterm/css/xterm.css";
+import { getAllJSDocTagsOfKind } from "typescript";
 
 // Judge0 Language mappings
 const JUDGE0_LANGUAGES = {
@@ -175,7 +176,7 @@ export default function IDE() {
   }, [termRef, isEditorLoaded]);
 
   async function submitToJudge0(code) {
-    const res = await fetch("/api/SubmitAssignment", {
+    const res = await fetch("/api/RunCode", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ source_code: code, language_id: selectedLanguage }),
@@ -223,6 +224,19 @@ export default function IDE() {
       xtermRef.current.write("🚀 \x1b[32mTerminal ready\x1b[0m - KLC IDE v1.0\r\n");
     }
   };
+
+  const SubmitToDatabase = async () => {
+    const res = await fetch("/api/SubmitCode", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: "Test",
+        level: "Easy",
+        subject: "Programming",
+        code: monacoRef.current.getValue(),
+      }),
+    });
+  }
 
   return (
     <>
@@ -341,6 +355,15 @@ export default function IDE() {
                       <span>Run Code</span>
                     </div>
                   )}
+                </button>
+
+                <button
+                  className="px-6 py-2 bg-gradient-to-r from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  onClick={SubmitToDatabase}
+                >
+                  <div className="flex items-center space-x-2">
+                    <span>Submit Code</span>
+                  </div>
                 </button>
               </div>
             </header>
