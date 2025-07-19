@@ -7,12 +7,15 @@ export async function POST(req) {
     const { userId, sessionClaims } = getAuth(req);
     const body = await req.json();
     const { name, level, subject } = body;
-    if (!userId) {
+    const email = sessionClaims?.email;
+
+    if (!userId || !email) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     console.log("sessionClaims:", sessionClaims);
-    const email = sessionClaims?.email_address;
     const hash = crypto.createHash('sha256').update(email+userId).digest('hex');
+      console.log(email,userId, hash);
+
   try {
     const assignment = await pool.query(
       `INSERT INTO assignments (name, level, subject, hash_userid_email)

@@ -10,7 +10,9 @@ export async function GET(req) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const email = sessionClaims?.email;
-  const hash_userid_email = crypto.createHash("sha256").update(email + userId).digest("hex");
+
+  const hash_userid_email = crypto.createHash("sha256").update(email+userId).digest("hex");
+  console.log(email,userId, hash_userid_email);
   try {
     const user = await clerkClient.users.getUser(userId);
     const role = user.privateMetadata?.isAdmin;
@@ -19,6 +21,8 @@ export async function GET(req) {
             "SELECT * FROM assignments WHERE hash_userid_email = $1",
             [hash_userid_email]
         );
+        console.log(hash_userid_email );
+        console.log(assignments.rows)
         console.log("User is not an admin")
         return NextResponse.json(assignments.rows);
     } else {
