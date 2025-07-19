@@ -1,7 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { cookies } from "next/headers";
 import TeacherDashboardPage from "@/app/dashboard/Dashboard";
-import StudentDashboardPage from "@/app/dashboard/StudentDashboard";
 import { redirect } from "next/navigation";
 import pool from "@/lib/db";
 
@@ -44,7 +43,7 @@ export default async function Main() {
             if (user.role === 'teacher') {
                 return <TeacherDashboardPage serverAssignments={assignments} />;
             } else {
-                return <StudentDashboardPage serverAssignments={assignments} />;
+
             }
         }
 
