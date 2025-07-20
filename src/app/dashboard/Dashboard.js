@@ -173,16 +173,6 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                                         {assignment.name}
                                                     </h3>
                                                     <div className="flex items-center gap-4 text-sm">
-                                                        {assignment.level && (
-                                                            <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded-lg border border-green-500/30">
-                                                                {assignment.level}
-                                                            </span>
-                                                        )}
-                                                        {assignment.subject && (
-                                                            <span className="px-2 py-1 bg-purple-500/20 text-purple-400 rounded-lg border border-purple-500/30">
-                                                                {assignment.subject}
-                                                            </span>
-                                                        )}
                                                         <span className="text-slate-400">•</span>
                                                         <span className="text-slate-400">{new Date(assignment.date_created).toLocaleString()}</span>
                                                     </div>
@@ -193,8 +183,6 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                                         e.stopPropagation(); // Prevent navigation
                                                         setEditingAssignment(assignment);
                                                         setNewTitle(assignment.name);
-                                                        setLevel(assignment.level);
-                                                        setSubject(assignment.subject);
                                                     }}
                                                     className="p-2 hover:bg-slate-600/50 rounded-lg transition-colors duration-200">
                                                         <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -271,36 +259,6 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                         className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300"
                                     />
                                 </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-300 mb-2">Level</label>
-                                        <select
-                                            value={level}
-                                            onChange={(e) => setLevel(e.target.value)}
-                                            className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300"
-                                        >
-                                            <option value="">Select Level</option>
-                                            {["Beginner", "Intermediate", "Advanced", "Master",].map((lvl) => (
-                                                <option key={lvl} value={lvl} className="bg-slate-800">{lvl}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-slate-300 mb-2">Subject</label>
-                                        <select
-                                            value={subject}
-                                            onChange={(e) => setSubject(e.target.value)}
-                                            className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300"
-                                        >
-                                            <option value="">Select Subject</option>
-                                            {["Python", "C++", "Web", "Scratch", "Others"].map((subj) => (
-                                                <option key={subj} value={subj} className="bg-slate-800">{subj}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
                             </div>
 
                             <div className="flex justify-end gap-3 mt-8">
@@ -318,14 +276,6 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                             alert("Title Required")
                                             return;
                                         }
-                                        if (!level) {
-                                            alert("Please select a level");
-                                            return;
-                                        }
-                                        if (!subject) {
-                                            alert("Please select a subject");
-                                            return;
-                                        }
 
                                         setIsAddingAssignment(true);
                                         const res = await fetch("/api/NewAssignment", {
@@ -333,8 +283,6 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                             headers: {"Content-Type": "application/json"},
                                             body: JSON.stringify({
                                                 name: newTitle,
-                                                level,
-                                                subject,
                                             }),
                                         });
 
@@ -386,48 +334,17 @@ export default function TeacherDashboardPage({serverAssignments}) {
                         </svg>
                         Edit Assignment
                         </h3>
-                
                         <div className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-2">Assignment Title</label>
-                            <input
-                            type="text"
-                            placeholder="Enter assignment title"
-                            value={newTitle}
-                            onChange={(e) => setNewTitle(e.target.value)}
-                            className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300"
-                            />
-                        </div>
-                
-                        <div className="grid grid-cols-2 gap-4">
                             <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-2">Level</label>
-                            <select
-                                value={level}
-                                onChange={(e) => setLevel(e.target.value)}
-                                className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300"
-                            >
-                                <option value="">Select Level</option>
-                                {["Beginner", "Intermediate", "Advanced", "Master"].map((lvl) => (
-                                <option key={lvl} value={lvl} className="bg-slate-800">{lvl}</option>
-                                ))}
-                            </select>
+                                <label className="block text-sm font-medium text-slate-300 mb-2">Assignment Title</label>
+                                <input
+                                type="text"
+                                placeholder="Enter assignment title"
+                                value={newTitle}
+                                onChange={(e) => setNewTitle(e.target.value)}
+                                className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300"
+                                />
                             </div>
-                
-                            <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-2">Subject</label>
-                            <select
-                                value={subject}
-                                onChange={(e) => setSubject(e.target.value)}
-                                className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300"
-                            >
-                                <option value="">Select Subject</option>
-                                {["Python", "C++", "Web", "Scratch", "Others"].map((subj) => (
-                                <option key={subj} value={subj} className="bg-slate-800">{subj}</option>
-                                ))}
-                            </select>
-                            </div>
-                        </div>
                         </div>
                 
                         <div className="flex justify-end gap-3 mt-8">
@@ -444,14 +361,6 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                     alert("Title Required");
                                     return;
                                 }
-                                if (!level) {
-                                    alert("Please select a level");
-                                    return;
-                                }
-                                if (!subject) {
-                                    alert("Please select a subject");
-                                    return;
-                                }
 
                                 setIsEditingAssignment(true); // Set loading state for editing
                                 try {
@@ -461,8 +370,6 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                         body: JSON.stringify({
                                             id: editingAssignment.id, // Send the ID of the assignment
                                             name: newTitle,
-                                            level,
-                                            subject,
                                         }),
                                     });
 
@@ -473,13 +380,11 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                         setAssignments((prev) =>
                                             prev.map((a) =>
                                                 a.id === editingAssignment.id
-                                                    ? { ...a, name: newTitle, level, subject }
+                                                    ? { ...a, name: newTitle }
                                                     : a
                                             )
                                         );
                                         setNewTitle('');
-                                        setLevel('');
-                                        setSubject('');
                                         setEditingAssignment(null); // Close the edit form
                                     }
                                 } catch (err) {

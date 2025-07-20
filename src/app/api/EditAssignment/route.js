@@ -6,7 +6,7 @@ import * as crypto from "node:crypto";
 export async function POST(req) {
     const { userId, sessionClaims } = getAuth(req);
     const body = await req.json();
-    const { id, name, level, subject } = body;
+    const { id, name } = body;
 
     if (!userId) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -14,7 +14,7 @@ export async function POST(req) {
     console.log("sessionClaims:", sessionClaims);
     const role = sessionClaims?.privateMetadata?.isAdmin;
 
-    if (!id || !name || !level || !subject) {
+    if (!id || !name ) {
         return NextResponse.json({ error: 'Missing required fields: id, name, level, or subject' }, { status: 400 });
     }
 
@@ -28,18 +28,18 @@ export async function POST(req) {
             const hash = crypto.createHash('sha256').update(email + userId).digest('hex');
             assignment = await pool.query(
                 `UPDATE assignments
-                 SET name = $2, level = $3, subject = $4
-                 WHERE id = $1 AND hash_userid_email = $5
+                 SET name = $2
+                 WHERE id = $1 AND hash_userid_email = $3
                  RETURNING *`,
-                [id, name, level, subject, hash]
+                [id, name, hash]
             );
         } else {
             assignment = await pool.query(
                 `UPDATE assignments
-                 SET name = $2, level = $3, subject = $4
+                 SET name = $2
                  WHERE id = $1
                  RETURNING *`,
-                [id, name, level, subject]
+                [id, name]
             );
         }
 

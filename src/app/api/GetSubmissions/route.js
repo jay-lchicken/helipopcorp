@@ -11,17 +11,15 @@ export async function GET(req) {
 
     const url = new URL(req.url);
     const name = url.searchParams.get("name");
-    const level = url.searchParams.get("level");
-    const subject = url.searchParams.get("subject");
 
-    if (!name || !level || !subject) {
-      console.error("Missing query parameters:", { name, level, subject });
+    if (!name) {
+      console.error("Missing query parameters:", { name });
       return NextResponse.json({ error: "Missing query parameters" }, { status: 400 });
     }
 
     const result = await pool.query(
-      "SELECT * FROM submissions WHERE name = $1 AND level = $2 AND subject = $3",
-      [name, level, subject]
+      "SELECT * FROM submissions WHERE name = $1",
+      [name]
     );
 
     return NextResponse.json(result.rows);

@@ -6,13 +6,13 @@ function SubmissionsList({ name, level, subject }) {
 
   useEffect(() => {
     const fetchSubmissions = async () => {
-      const params = new URLSearchParams({ name, level, subject });
+      const params = new URLSearchParams({ name });
       const res = await fetch(`/api/GetSubmissions?${params.toString()}`);
       const data = await res.json();
       setSubmissions(data);
     };
     fetchSubmissions();
-  }, [name, level, subject]);
+  }, [name]);
 
   if (submissions.length === 0) {
     return <li className="text-gray-400">No submissions yet.</li>;
@@ -128,7 +128,6 @@ export default function IDE() {
             <div className="flex flex-col items-center space-y-4">
                 <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                 <div className="text-white text-xl font-semibold">Loading page...</div>
-                <div className="text-gray-400 text-sm">Setting up your coding environment</div>
             </div>
             </div>
         )}
@@ -140,20 +139,6 @@ export default function IDE() {
               </div>
               <div className="flex-1 text-center">
                 <p className="text-lg font-semibold text-white">{assignmentId}</p>
-                {assignment && (
-                  <div className="mt-1 flex justify-center gap-2 text-sm">
-                    {assignment.level && (
-                      <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded-lg border border-green-500/30">
-                        {assignment.level}
-                      </span>
-                    )}
-                    {assignment.subject && (
-                      <span className="px-2 py-1 bg-purple-500/20 text-purple-400 rounded-lg border border-purple-500/30">
-                        {assignment.subject}
-                      </span>
-                    )}
-                  </div>
-                )}
               </div>
               <div className="w-12" />
             </header>
