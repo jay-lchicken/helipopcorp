@@ -43,7 +43,7 @@ export default async function Main() {
             if (user.role === 'teacher') {
                 return <TeacherDashboardPage serverAssignments={assignments} />;
             } else {
-
+                return <div>You are not authorized to access this page</div>;
             }
         }
 

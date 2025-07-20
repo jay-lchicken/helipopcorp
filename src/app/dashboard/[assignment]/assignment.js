@@ -1,18 +1,20 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-function SubmissionsList({ name, level, subject }) {
+function SubmissionsList({ assignmentID }) {
   const [submissions, setSubmissions] = useState([]);
 
   useEffect(() => {
     const fetchSubmissions = async () => {
-      const params = new URLSearchParams({ name });
+      const params = new URLSearchParams({ assignmentID });
       const res = await fetch(`/api/GetSubmissions?${params.toString()}`);
       const data = await res.json();
       setSubmissions(data);
     };
-    fetchSubmissions();
-  }, [name]);
+    if (assignmentID) {
+      fetchSubmissions();
+    }
+  }, [assignmentID]);
 
   if (submissions.length === 0) {
     return <li className="text-gray-400">No submissions yet.</li>;
@@ -39,9 +41,6 @@ function SubmissionsList({ name, level, subject }) {
               ? sub.code.slice(0, 100) + "..."
               : sub.code}
           </div>
-          {/* <div className="mt-2 flex gap-2">
-            // Place for edit/delete buttons if needed in the future
-          </div> */}
         </div>
       ))}
     </div>
@@ -66,11 +65,11 @@ export default function IDE() {
     return matched || null;
   };
 
-  const getSubmissionsFromDatabase = async () => {
-    const res = await fetch("/api/GetSubmissions");
+  const getSubmissionsFromDatabase = async (assignmentId) => {
+    const params = new URLSearchParams({ assignmentID: assignmentId });
+    const res = await fetch(`/api/GetSubmissions?${params.toString()}`);
     const data = await res.json();
-    console.log("Submissions API response:", data);
-    return data || [];
+    console.log("API response:", data);
   }
 
   useEffect(() => {
@@ -78,6 +77,7 @@ export default function IDE() {
       setLoading(true);
       getAssignmentFromDatabase().then((data) => {
         setAssignment(data);
+        if (data?.id) getSubmissionsFromDatabase(data.id);
         setLoading(false);
       });
     }
@@ -138,7 +138,14 @@ export default function IDE() {
                 <img className="h-12" src="/klc.png" alt="KLC Logo" />
               </div>
               <div className="flex-1 text-center">
-                <p className="text-lg font-semibold text-white">{assignmentId}</p>
+                {assignment ? (
+                  <div className="text-lg font-semibold text-white">
+                    <p>Name: {assignment.name}</p>
+                    <p>ID: {assignment.id}</p>
+                  </div>
+                ) : (
+                  <p className="text-gray-400 text-sm">Loading assignment...</p>
+                )}
               </div>
               <div className="w-12" />
             </header>
@@ -147,7 +154,7 @@ export default function IDE() {
                 <h2 className="text-2xl font-bold mb-4">Submissions</h2>
                 <ul className="space-y-2">
                   {assignment ? (
-                    <SubmissionsList name={assignment.name} level={assignment.level} subject={assignment.subject} />
+                    <SubmissionsList assignmentID={assignment.id} />
                   ) : (
                     <p className="text-gray-400">Loading assignment details...</p>
                   )}

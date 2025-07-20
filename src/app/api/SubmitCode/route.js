@@ -6,19 +6,22 @@ import * as crypto from "node:crypto";
 export async function POST(req) {
     const { userId, sessionClaims } = getAuth(req);
     const body = await req.json();
-    const { name, code } = body;
+    const { assignment_id, code } = body;
     if (!userId) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+    if (!userId || !sessionClaims?.email) {
+      return NextResponse.json({ error: 'Unauthorized: no email' }, { status: 401 });
+    }
     console.log("sessionClaims:", sessionClaims);
-    const email = sessionClaims?.email_address;
+    const email = sessionClaims?.email;
     const hash = crypto.createHash('sha256').update(email+userId).digest('hex');
   try {
     const assignment = await pool.query(
-      `INSERT INTO submissions (name, hash_userid_email, code)
-       VALUES ($1, $2, $3)
+      `INSERT INTO submissions (name, hash_userid_email, code, assignment_id)
+       VALUES ($1, $2, $3, $4)
        RETURNING *`,
-      [name, hash, code]
+      [email, hash, code, assignment_id]
     );
     console.log(assignment.rows[0]);
     return NextResponse.json(assignment.rows[0]);

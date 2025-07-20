@@ -3,23 +3,24 @@ import { NextResponse } from "next/server";
 import pool from "@/lib/db";
 
 export async function GET(req) {
+  const { userId, sessionClaims } = getAuth(req);
+
+  if (!userId || !sessionClaims?.email) {
+    return NextResponse.json({ error: 'Unauthorized: no email' }, { status: 401 });
+  }
+
+  const url = new URL(req.url);
+  const assignmentID = url.searchParams.get("assignmentID");
+
+  if (!assignmentID) {
+    console.error("Missing query parameters:", { assignmentID });
+    return NextResponse.json({ error: "Missing query parameters" }, { status: 400 });
+  }
+
   try {
-    const { userId } = getAuth(req);
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const url = new URL(req.url);
-    const name = url.searchParams.get("name");
-
-    if (!name) {
-      console.error("Missing query parameters:", { name });
-      return NextResponse.json({ error: "Missing query parameters" }, { status: 400 });
-    }
-
     const result = await pool.query(
-      "SELECT * FROM submissions WHERE name = $1",
-      [name]
+      "SELECT * FROM submissions WHERE assignment_id = $1",
+      [assignmentID]
     );
 
     return NextResponse.json(result.rows);
