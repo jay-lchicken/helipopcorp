@@ -6,7 +6,7 @@ import * as crypto from "node:crypto";
 export async function POST(req) {
     const { userId, sessionClaims } = getAuth(req);
     const body = await req.json();
-    const { name, level, subject } = body;
+    const { name } = body;
     if (!userId) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -20,16 +20,16 @@ export async function POST(req) {
             const hash = crypto.createHash('sha256').update(email + userId).digest('hex');
             assignment = await pool.query(
                 `DELETE FROM assignments
-                WHERE name = $1 AND level = $2 AND subject = $3 AND hash_userid_email = $4
+                WHERE name = $1 AND hash_userid_email = $2
                 RETURNING *`,
-                [name, level, subject, hash]
+                [name, hash]
             );
         } else {
             assignment = await pool.query(
                 `DELETE FROM assignments
-                WHERE name = $1 AND level = $2 AND subject = $3
+                WHERE name = $1
                 RETURNING *`,
-                [name, level, subject]
+                [name]
             );
         }
         console.log('Deleted rows:', assignment.rows);
