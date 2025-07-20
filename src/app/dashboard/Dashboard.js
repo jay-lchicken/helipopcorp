@@ -6,14 +6,17 @@ import {SignedIn, SignedOut, SignInButton, SignUpButton, useUser} from '@clerk/n
 export default function TeacherDashboardPage({serverAssignments}) {
     const {user} = useUser();
 
-    const [showForm, setShowForm] = useState(false);
+    const [showAddForm, setShowAddForm] = useState(false);
+    const [editingAssignment, setEditingAssignment] = useState(null); // State to hold the assignment being edited
     const [newTitle, setNewTitle] = useState('');
+    
     const [level, setLevel] = useState('');
     const [subject, setSubject] = useState('');
     const [assignments, setAssignments] = useState(serverAssignments || []);
     const [isLoaded, setIsLoaded] = useState(false);
     const [isAddingAssignment, setIsAddingAssignment] = useState(false);
     const [isDeletingAssignment, setIsDeletingAssignment] = useState(false);
+    const [isEditingAssignment, setIsEditingAssignment] = useState(false); // New state for editing loading
 
     useEffect(() => {
         setIsLoaded(true);
@@ -129,7 +132,7 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                     </span>
                                 </div>
                                 <button
-                                    onClick={() => setShowForm(true)}
+                                    onClick={() => setShowAddForm(true)}
                                     className="group flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 font-semibold relative overflow-hidden"
                                 >
                                     <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -150,7 +153,7 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                     <h3 className="text-xl font-semibold text-slate-300 mb-2">No assignments yet</h3>
                                     <p className="text-slate-400 mb-6">Create your first assignment to get started</p>
                                     <button
-                                        onClick={() => setShowForm(true)}
+                                        onClick={() => setShowAddForm(true)}
                                         className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-all duration-300"
                                     >
                                         Create Assignment
@@ -158,12 +161,12 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                 </div>
                             ) : (
                                 <div className="space-y-4">
-                                    {assignments.map((assignment, index) => (
+                                    {assignments.map((assignment) => ( // Removed index, using assignment.id
                                         <div 
                                         onClick={() => {
                                             window.location.href = `/dashboard/${assignment.name}`;
                                         }}
-                                        key={index} className="group bg-slate-700/30 border border-slate-600/30 rounded-xl p-6 hover:bg-slate-700/40 hover:border-slate-600/50 transition-all duration-300">
+                                        key={assignment.id} className="group bg-slate-700/30 border border-slate-600/30 rounded-xl p-6 hover:bg-slate-700/40 hover:border-slate-600/50 transition-all duration-300">
                                             <div className="flex items-start justify-between">
                                                 <div className="flex-1">
                                                     <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-blue-400 transition-colors duration-300">
@@ -185,14 +188,23 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                    <button className="p-2 hover:bg-slate-600/50 rounded-lg transition-colors duration-200">
+                                                    <button 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation(); // Prevent navigation
+                                                        setEditingAssignment(assignment);
+                                                        setNewTitle(assignment.name);
+                                                        setLevel(assignment.level);
+                                                        setSubject(assignment.subject);
+                                                    }}
+                                                    className="p-2 hover:bg-slate-600/50 rounded-lg transition-colors duration-200">
                                                         <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                         </svg>
                                                     </button>
                                                     <button className="p-2 hover:bg-slate-600/50 rounded-lg transition-colors duration-200">
                                                         <svg
-                                                        onClick={async () => {
+                                                        onClick={async (e) => {
+                                                            e.stopPropagation();
                                                             setIsDeletingAssignment(true);
                                                             const res = await fetch("/api/DeleteAssignment", {
                                                                 method: "POST",
@@ -237,7 +249,7 @@ export default function TeacherDashboardPage({serverAssignments}) {
                 )}
             </SignedIn>
 
-            {showForm && (
+            {showAddForm && (
                 <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
                     <div className="bg-slate-800/90 backdrop-blur-md border border-slate-700/50 rounded-2xl shadow-2xl w-full max-w-md relative">
                         <div className="p-8">
@@ -293,7 +305,7 @@ export default function TeacherDashboardPage({serverAssignments}) {
 
                             <div className="flex justify-end gap-3 mt-8">
                                 <button
-                                    onClick={() => setShowForm(false)}
+                                    onClick={() => setShowAddForm(false)}
                                     className="px-6 py-3 bg-slate-600/50 hover:bg-slate-600/70 text-white rounded-xl font-semibold transition-all duration-300 border border-slate-500/50"
                                 >
                                     Cancel
@@ -331,9 +343,12 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                         if (data.error) {
                                             alert("Error adding assignment: " + data.error);
                                         } else {
+                                            // Assuming your API returns the newly created assignment with an ID
+                                            // For now, we'll simulate an ID if not returned.
                                             setAssignments((prev) => [
                                                 ...prev,
                                                 {
+                                                    id: data.id || Date.now(), // Use ID from API or a temporary one
                                                     name: newTitle,
                                                     level: level,
                                                     subject: subject,
@@ -343,7 +358,7 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                             setNewTitle('');
                                             setLevel('');
                                             setSubject('');
-                                            setShowForm(false);
+                                            setShowAddForm(false);
                                         }
                                         setIsAddingAssignment(false);
 
@@ -356,6 +371,132 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                 </button>
                             </div>
                         </div>
+                    </div>
+                </div>
+            )}
+
+
+            {editingAssignment && (
+                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-slate-800/90 backdrop-blur-md border border-slate-700/50 rounded-2xl shadow-2xl w-full max-w-md relative">
+                    <div className="p-8">
+                        <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                        <svg className="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Edit Assignment
+                        </h3>
+                
+                        <div className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-300 mb-2">Assignment Title</label>
+                            <input
+                            type="text"
+                            placeholder="Enter assignment title"
+                            value={newTitle}
+                            onChange={(e) => setNewTitle(e.target.value)}
+                            className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300"
+                            />
+                        </div>
+                
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                            <label className="block text-sm font-medium text-slate-300 mb-2">Level</label>
+                            <select
+                                value={level}
+                                onChange={(e) => setLevel(e.target.value)}
+                                className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300"
+                            >
+                                <option value="">Select Level</option>
+                                {["Beginner", "Intermediate", "Advanced", "Master"].map((lvl) => (
+                                <option key={lvl} value={lvl} className="bg-slate-800">{lvl}</option>
+                                ))}
+                            </select>
+                            </div>
+                
+                            <div>
+                            <label className="block text-sm font-medium text-slate-300 mb-2">Subject</label>
+                            <select
+                                value={subject}
+                                onChange={(e) => setSubject(e.target.value)}
+                                className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300"
+                            >
+                                <option value="">Select Subject</option>
+                                {["Python", "C++", "Web", "Scratch", "Others"].map((subj) => (
+                                <option key={subj} value={subj} className="bg-slate-800">{subj}</option>
+                                ))}
+                            </select>
+                            </div>
+                        </div>
+                        </div>
+                
+                        <div className="flex justify-end gap-3 mt-8">
+                        <button
+                            onClick={() => setEditingAssignment(null)}
+                            className="px-6 py-3 bg-slate-600/50 hover:bg-slate-600/70 text-white rounded-xl font-semibold transition-all duration-300 border border-slate-500/50"
+                        >
+                            Cancel
+                        </button>
+                
+                        <button
+                            onClick={async () => {
+                                if (!newTitle.trim()) {
+                                    alert("Title Required");
+                                    return;
+                                }
+                                if (!level) {
+                                    alert("Please select a level");
+                                    return;
+                                }
+                                if (!subject) {
+                                    alert("Please select a subject");
+                                    return;
+                                }
+
+                                setIsEditingAssignment(true); // Set loading state for editing
+                                try {
+                                    const res = await fetch("/api/EditAssignment", { // Correct API endpoint
+                                        method: "POST",
+                                        headers: { "Content-Type": "application/json" },
+                                        body: JSON.stringify({
+                                            id: editingAssignment.id, // Send the ID of the assignment
+                                            name: newTitle,
+                                            level,
+                                            subject,
+                                        }),
+                                    });
+
+                                    const data = await res.json();
+                                    if (data.error) {
+                                        alert("Error editing assignment: " + data.error);
+                                    } else {
+                                        setAssignments((prev) =>
+                                            prev.map((a) =>
+                                                a.id === editingAssignment.id
+                                                    ? { ...a, name: newTitle, level, subject }
+                                                    : a
+                                            )
+                                        );
+                                        setNewTitle('');
+                                        setLevel('');
+                                        setSubject('');
+                                        setEditingAssignment(null); // Close the edit form
+                                    }
+                                } catch (err) {
+                                    console.error("Error updating assignment:", err);
+                                    alert("An unexpected error occurred. Please try again.");
+                                } finally {
+                                    setIsEditingAssignment(false); // Reset loading state
+                                }
+                            }}
+                            className="group px-6 py-3 bg-gradient-to-r disabled:opacity-50 from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl relative overflow-hidden"
+                            disabled={isEditingAssignment} // Disable button during API call
+                        >
+                            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            <span className="relative">Save Changes</span>
+                        </button>
+                        </div>
+                    </div>
                     </div>
                 </div>
             )}

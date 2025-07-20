@@ -11,19 +11,31 @@ export async function POST(req) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     console.log("sessionClaims:", sessionClaims);
-    const email = sessionClaims?.email_address;
-    const hash = crypto.createHash('sha256').update(email+userId).digest('hex');
-  try {
-    const assignment = await pool.query(
-        `DELETE FROM assignments
-         WHERE name = $1 AND level = $2 AND subject = $3 AND hash_userid_email = $4
-         RETURNING *`,
-        [name, level, subject, hash]
-    );
-    console.log('Deleted rows:', assignment.rows);
-    return NextResponse.json({ message: 'Assignment deleted successfully' });
-  } catch (err) {
-    console.error('DB error:', err);
-    return new Response('Internal server error', { status: 500 });
-  }
+    const role = sessionClaims?.privateMetadata?.isAdmin;
+
+    try {
+        let assignment;
+        if (!role) {
+            const email = sessionClaims?.email;
+            const hash = crypto.createHash('sha256').update(email + userId).digest('hex');
+            assignment = await pool.query(
+                `DELETE FROM assignments
+                WHERE name = $1 AND level = $2 AND subject = $3 AND hash_userid_email = $4
+                RETURNING *`,
+                [name, level, subject, hash]
+            );
+        } else {
+            assignment = await pool.query(
+                `DELETE FROM assignments
+                WHERE name = $1 AND level = $2 AND subject = $3
+                RETURNING *`,
+                [name, level, subject]
+            );
+        }
+        console.log('Deleted rows:', assignment.rows);
+        return NextResponse.json({ message: 'Assignment deleted successfully' });
+    } catch (err) {
+        console.error('DB error:', err);
+        return new Response('Internal server error', { status: 500 });
+    }
 }
