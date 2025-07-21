@@ -1,5 +1,5 @@
 import {auth} from "@clerk/nextjs/server";
-import Assignment from "@/app/dashboard/[assignment]/assignment";
+import Assignment from "./assignment";
 import {cookies} from "next/headers";
 
 export default async function Main() {

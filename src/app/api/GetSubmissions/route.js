@@ -19,7 +19,16 @@ export async function GET(req) {
 
   try {
     const result = await pool.query(
-      "SELECT * FROM submissions WHERE assignment_id = $1",
+      `SELECT 
+         hash_userid_email,
+         name AS user_id, 
+         id, 
+         date_created AS created_at, 
+         code, 
+         assignment_id, 
+         language_id
+       FROM submissions 
+       WHERE assignment_id = $1`,
       [assignmentID]
     );
 

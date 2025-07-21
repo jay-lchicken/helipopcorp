@@ -66,7 +66,7 @@ const MONACO_THEMES = [
   { value: "hc-light", label: "High Contrast Light" }
 ];
 
-export default function IDE() {
+export default function Code_Viewer() {
   const { assignmentId } = useParams();
   const { isSignedIn } = useUser();
   const editorRef = useRef(null);
@@ -81,28 +81,7 @@ export default function IDE() {
   const [selectedLanguage, setSelectedLanguage] = useState(63); // Default to JavaScript
   const [selectedTheme, setSelectedTheme] = useState("vs-dark");
 
-  // Get default code for language
-  const getDefaultCode = (langId) => {
-    const language = JUDGE0_LANGUAGES[langId];
-    if (!language) return "// Welcome to KLC IDE\n// Start coding here...\n";
-
-    const examples = {
-      63: "// Welcome to KLC IDE\n// JavaScript Example\nconsole.log('Hello, World!');\n",
-      71: "# Welcome to KLC IDE\n# Python Example\nprint('Hello, World!')\n",
-      62: "// Welcome to KLC IDE\n// Java Example\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, World!\");\n    }\n}\n",
-      54: "// Welcome to KLC IDE\n// C++ Example\n#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << \"Hello, World!\" << endl;\n    return 0;\n}\n",
-      50: "// Welcome to KLC IDE\n// C Example\n#include <stdio.h>\n\nint main() {\n    printf(\"Hello, World!\\n\");\n    return 0;\n}\n",
-      70: "# Welcome to KLC IDE\n# Python 2 Example\nprint 'Hello, World!'\n",
-      72: "# Welcome to KLC IDE\n# Ruby Example\nputs 'Hello, World!'\n",
-      60: "// Welcome to KLC IDE\n// Go Example\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n    fmt.Println(\"Hello, World!\")\n}\n",
-      73: "// Welcome to KLC IDE\n// Rust Example\nfn main() {\n    println!(\"Hello, World!\");\n}\n",
-      74: "// Welcome to KLC IDE\n// TypeScript Example\nconsole.log('Hello, World!');\n"
-    };
-
-    return examples[langId] || `// Welcome to KLC IDE\n// ${language.name} Example\n// Start coding here...\n`;
-  };
-
-  // Initialize Monaco editor
+  // Initialize Monaco editors
   useEffect(() => {
     if (!isSignedIn || isEditorLoaded || !editorRef.current || !isScriptLoaded) return;
 
@@ -113,7 +92,7 @@ export default function IDE() {
     window.require(["vs/editor/editor.main"], () => {
       const currentLanguage = JUDGE0_LANGUAGES[selectedLanguage];
       monacoRef.current = window.monaco.editor.create(editorRef.current, {
-        value: getDefaultCode(selectedLanguage),
+        value: "",
         language: currentLanguage?.monaco || "javascript",
         theme: selectedTheme,
         automaticLayout: true,
@@ -138,6 +117,21 @@ export default function IDE() {
       const model = monacoRef.current.getModel();
       window.monaco.editor.setModelLanguage(model, language?.monaco || "javascript");
       monacoRef.current.setValue(getDefaultCode(parseInt(langId)));
+    }
+  };
+
+
+  const getSubmissionFromDatabase = async () => {
+    try {
+      const res = await fetch(`/api/GetSubmissions?assignmentId=${assignmentId}`,);
+      if (!res.ok) throw new Error("Failed to fetch assignments");
+      const data = await res.json();
+      console.log("Assignments API response:", data);
+      const matched = data.find((a) => a.name === assignmentName);
+      return matched || null;
+    } catch (err) {
+      console.error("Error fetching assignments:", err);
+      return null;
     }
   };
 
@@ -236,7 +230,6 @@ export default function IDE() {
       body: JSON.stringify({
         assignment_id: assignmentId,
         code: monacoRef.current.getValue(),
-        language_id: selectedLanguage,
       }),
     });
   }

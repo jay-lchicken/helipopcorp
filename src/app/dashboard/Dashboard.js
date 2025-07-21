@@ -164,7 +164,7 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                     {assignments.map((assignment) => ( // Removed index, using assignment.id
                                         <div 
                                         onClick={() => {
-                                            window.location.href = `/dashboard/${assignment.name}`;
+                                            window.location.href = `/dashboard/${assignment.id}`;
                                         }}
                                         key={assignment.id} className="group bg-slate-700/30 border border-slate-600/30 rounded-xl p-6 hover:bg-slate-700/40 hover:border-slate-600/50 transition-all duration-300">
                                             <div className="flex items-start justify-between">
