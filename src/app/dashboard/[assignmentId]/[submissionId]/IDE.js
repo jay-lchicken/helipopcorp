@@ -319,6 +319,12 @@ export default function IDE2({data}) {
           )}
 
           <div className="flex flex-col h-screen">
+                        <header className="flex items-center justify-between px-6 py-4 border-b border-gray-700/50 bg-gray-900/50 backdrop-blur-sm">
+                                                    <h1>Student's Email: {data.user_id}</h1>
+
+                        </header>
+
+
             <header className="flex items-center justify-between px-6 py-4 border-b border-gray-700/50 bg-gray-900/50 backdrop-blur-sm">
               <div className="flex items-center space-x-4">
                 <img className=" h-12" src="/klc.png" alt="KLC Logo" />

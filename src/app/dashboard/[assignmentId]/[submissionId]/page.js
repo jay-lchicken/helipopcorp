@@ -37,6 +37,7 @@ const user = await response.users.getUser(userId);
        WHERE assignment_id = $1 AND id = $2 AND hash_userid_email = $3`,
       [assignmentId, submissionId, hash]
     );
+        console.log(result);
          if (result.rowCount === 0) {
           return <div>Haha. Thanks for trying but ur access is denied</div>
         } else {

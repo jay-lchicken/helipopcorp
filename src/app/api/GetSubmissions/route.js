@@ -34,9 +34,6 @@ export async function GET(req) {
        WHERE assignment_id = $1 AND hash_userid_email = $2`,
       [assignmentID, hash]
     );
-    if (result.rows.length === 0) {
-      return NextResponse.json({ error: "No submissions found" }, { status: 404 });
-    }
     return NextResponse.json(result.rows);
   } catch (error) {
     console.error("Error in GetSubmissions API:", error);
