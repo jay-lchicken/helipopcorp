@@ -1,16 +1,19 @@
 import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import pool from "@/lib/db";
+import crypto from "node:crypto";
 
 export async function GET(req) {
   const { userId, sessionClaims } = getAuth(req);
+  const email = sessionClaims?.email;
 
   if (!userId || !sessionClaims?.email) {
     return NextResponse.json({ error: 'Unauthorized: no email' }, { status: 401 });
   }
+        const hash = crypto.createHash('sha256').update(email+userId).digest('hex');
 
   const url = new URL(req.url);
-  const assignmentID = url.searchParams.get("assignmentId");
+  const assignmentID = url.searchParams.get("assignmentID");
 
   if (!assignmentID) {
     console.error("Missing query parameters:", { assignmentID });
@@ -28,8 +31,8 @@ export async function GET(req) {
          assignment_id, 
          language_id
        FROM submissions 
-       WHERE assignment_id = $1`,
-      [assignmentID]
+       WHERE assignment_id = $1 AND hash_userid_email = $2`,
+      [assignmentID, hash]
     );
     if (result.rows.length === 0) {
       return NextResponse.json({ error: "No submissions found" }, { status: 404 });
