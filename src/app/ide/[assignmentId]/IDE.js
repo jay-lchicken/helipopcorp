@@ -362,7 +362,10 @@ export default function IDE() {
 
                 <button
                   className="px-6 py-2 bg-gradient-to-r from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                  onClick={SubmitToDatabase}
+                  onClick={async () => {
+                    await SubmitToDatabase();
+                    window.location.href = `./${assignmentId}/submitted`;
+                  }}
                 >
                   <div className="flex items-center space-x-2">
                     <span>Submit Code</span>

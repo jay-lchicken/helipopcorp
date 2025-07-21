@@ -31,10 +31,10 @@ export default function SubmittedPage() {
             <p className="text-2xl py-4">✅ Code Submitted!</p>
             <p className="mb-4">Your code has been successfully submitted :)</p>
             <a
-              href="/dashboard"
+              href="/"
               className="px-6 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 font-semibold"
             >
-              Go to Dashboard
+              Go to Home Page
             </a>
           </div>
         </div>
