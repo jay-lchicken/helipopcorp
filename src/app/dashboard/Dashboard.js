@@ -1,7 +1,73 @@
 'use client';
 
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useCallback} from 'react';
 import {SignedIn, SignedOut, SignInButton, SignUpButton, useUser} from '@clerk/nextjs';
+import React from 'react';
+
+const AssignmentList = React.memo(({ assignments, onEdit, onDelete }) => (
+  <div className="space-y-4">
+    {assignments.map((assignment) => (
+      <div
+        key={assignment.id}
+        onClick={() => {
+          window.location.href = `/dashboard/${assignment.id}`;
+        }}
+        className="group bg-slate-700/30 border border-slate-600/30 rounded-xl p-6 hover:bg-slate-700/40 hover:border-slate-600/50 transition-all duration-300"
+      >
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-blue-400 transition-colors duration-300">
+              {assignment.name}
+            </h3>
+            <div className="flex items-center gap-4 text-sm">
+              <span className="text-slate-400">•</span>
+              <span className="text-slate-400">{new Date(assignment.date_created).toLocaleString()}</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(assignment);
+              }}
+              className="p-2 hover:bg-slate-600/50 rounded-lg transition-colors duration-200"
+            >
+              <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
+              </svg>
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(assignment);
+              }}
+              className="p-2 hover:bg-slate-600/50 rounded-lg transition-colors duration-200"
+            >
+              <svg
+                className="w-4 h-4 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+));
 
 export default function TeacherDashboardPage({serverAssignments}) {
     const {user} = useUser();
@@ -17,6 +83,32 @@ export default function TeacherDashboardPage({serverAssignments}) {
     const [isAddingAssignment, setIsAddingAssignment] = useState(false);
     const [isDeletingAssignment, setIsDeletingAssignment] = useState(false);
     const [isEditingAssignment, setIsEditingAssignment] = useState(false); // New state for editing loading
+
+    const handleEdit = useCallback((assignment) => {
+        setEditingAssignment(assignment);
+        setNewTitle(assignment.name);
+    }, []);
+
+    const handleDelete = useCallback(async (assignment) => {
+        setIsDeletingAssignment(true);
+        try {
+            const res = await fetch('/api/DeleteAssignment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(assignment),
+            });
+            const data = await res.json();
+            if (!data.error) {
+                setAssignments((prev) => prev.filter((a) => a.id !== assignment.id));
+            } else {
+                alert('Error deleting assignment: ' + data.error);
+            }
+        } catch (err) {
+            console.error('Error deleting assignment:', err);
+        } finally {
+            setIsDeletingAssignment(false);
+        }
+    }, []);
 
     useEffect(() => {
         setIsLoaded(true);
@@ -160,76 +252,7 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                     </button>
                                 </div>
                             ) : (
-                                <div className="space-y-4">
-                                    {assignments.map((assignment) => ( // Removed index, using assignment.id
-                                        <div 
-                                        onClick={() => {
-                                            window.location.href = `/dashboard/${assignment.id}`;
-                                        }}
-                                        key={assignment.id} className="group bg-slate-700/30 border border-slate-600/30 rounded-xl p-6 hover:bg-slate-700/40 hover:border-slate-600/50 transition-all duration-300">
-                                            <div className="flex items-start justify-between">
-                                                <div className="flex-1">
-                                                    <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-blue-400 transition-colors duration-300">
-                                                        {assignment.name}
-                                                    </h3>
-                                                    <div className="flex items-center gap-4 text-sm">
-                                                        <span className="text-slate-400">•</span>
-                                                        <span className="text-slate-400">{new Date(assignment.date_created).toLocaleString()}</span>
-                                                    </div>
-                                                </div>
-                                                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                    <button 
-                                                    onClick={(e) => {
-                                                        e.stopPropagation(); // Prevent navigation
-                                                        setEditingAssignment(assignment);
-                                                        setNewTitle(assignment.name);
-                                                    }}
-                                                    className="p-2 hover:bg-slate-600/50 rounded-lg transition-colors duration-200">
-                                                        <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                        </svg>
-                                                    </button>
-                                                    <button className="p-2 hover:bg-slate-600/50 rounded-lg transition-colors duration-200">
-                                                        <svg
-                                                        onClick={async (e) => {
-                                                            e.stopPropagation();
-                                                            setIsDeletingAssignment(true);
-                                                            const res = await fetch("/api/DeleteAssignment", {
-                                                                method: "POST",
-                                                                headers: {"Content-Type": "application/json"},
-                                                                body: JSON.stringify({
-                                                                    name: assignment.name,
-                                                                    level: assignment.level,
-                                                                    subject: assignment.subject, 
-                                                                }),
-                                                            });
-
-                                                            const data = await res.json();
-
-                                                            if (data.error) {
-                                                                alert("Error adding assignment: " + data.error);
-                                                            } else {
-                                                                setAssignments((prev) => 
-                                                                    prev.filter((a) => 
-                                                                        !(
-                                                                            a.name === assignment.name
-                                                                            && a.level === assignment.level
-                                                                            && a.subject === assignment.subject
-                                                                        )
-                                                                    ),
-                                                                );
-                                                            }
-                                                            setIsDeletingAssignment(false);
-                                                            }}
-                                                            className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                        </svg>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
+                                <AssignmentList assignments={assignments} onEdit={handleEdit} onDelete={handleDelete} />
                             )}
                         </div>
                     </div>

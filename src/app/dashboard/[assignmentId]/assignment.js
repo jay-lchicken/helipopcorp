@@ -179,6 +179,9 @@ export default function IDE() {
                 <p className="text-gray-400">Loading assignment details...</p>
               )}
             </div>
+            <div className="w-full h-[60vh]">
+              <div id="monaco-editor-container" className="w-full h-full" />
+            </div>
           </main>
         </div>
       </SignedIn>
