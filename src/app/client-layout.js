@@ -5,7 +5,7 @@ import { SignedIn, SignOutButton } from "@clerk/nextjs";
 import {ClerkProvider} from "@clerk/nextjs";
 export default function ClientLayout({ children }) {
   const pathname = usePathname();
-  const hideOnPaths = ["/", "/ide", "/ide/submitted"];
+  const hideOnPaths = ["/", "/ide", "a"];
   const shouldShowSignOut = !hideOnPaths.includes(pathname);
 
   return (

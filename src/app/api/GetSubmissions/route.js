@@ -10,7 +10,7 @@ export async function GET(req) {
   }
 
   const url = new URL(req.url);
-  const assignmentID = url.searchParams.get("assignmentID");
+  const assignmentID = url.searchParams.get("assignmentId");
 
   if (!assignmentID) {
     console.error("Missing query parameters:", { assignmentID });
@@ -31,7 +31,9 @@ export async function GET(req) {
        WHERE assignment_id = $1`,
       [assignmentID]
     );
-
+    if (result.rows.length === 0) {
+      return NextResponse.json({ error: "No submissions found" }, { status: 404 });
+    }
     return NextResponse.json(result.rows);
   } catch (error) {
     console.error("Error in GetSubmissions API:", error);

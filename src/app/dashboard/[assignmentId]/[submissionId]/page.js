@@ -67,6 +67,7 @@ const MONACO_THEMES = [
 ];
 
 export default function Code_Viewer() {
+  const [submission, setSubmission] = useState([]);
   const { assignmentId } = useParams();
   const { isSignedIn } = useUser();
   const editorRef = useRef(null);
@@ -92,8 +93,8 @@ export default function Code_Viewer() {
     window.require(["vs/editor/editor.main"], () => {
       const currentLanguage = JUDGE0_LANGUAGES[selectedLanguage];
       monacoRef.current = window.monaco.editor.create(editorRef.current, {
-        value: "",
-        language: currentLanguage?.monaco || "javascript",
+        value: submission.code,
+        language: submission.language_id.monaco, 
         theme: selectedTheme,
         automaticLayout: true,
         fontSize: 14,
@@ -121,17 +122,17 @@ export default function Code_Viewer() {
   };
 
 
-  const getSubmissionFromDatabase = async () => {
+  const fetchSubmissions = async () => {
     try {
-      const res = await fetch(`/api/GetSubmissions?assignmentId=${assignmentId}`,);
-      if (!res.ok) throw new Error("Failed to fetch assignments");
+      const params = new URLSearchParams({ assignmentId: assignmentId.toString() });
+      const res = await fetch(`/api/GetSubmissions?${params.toString()}`);
+      console.log(`${res}`);
+      if (!res.ok) throw new Error("Failed to fetch submissions");
       const data = await res.json();
-      console.log("Assignments API response:", data);
-      const matched = data.find((a) => a.name === assignmentName);
-      return matched || null;
-    } catch (err) {
-      console.error("Error fetching assignments:", err);
-      return null;
+      return data;
+    } catch (error) {
+      console.error("Error fetching submissions:", error);
+      return [];
     }
   };
 
@@ -221,24 +222,17 @@ export default function Code_Viewer() {
     }
   };
 
-  const SubmitToDatabase = async () => {
-    // Debug: Ensure assignmentId is not undefined
-    console.log("Submitting to database with assignmentId:", assignmentId);
-    const res = await fetch("/api/SubmitCode", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        assignment_id: assignmentId,
-        code: monacoRef.current.getValue(),
-      }),
-    });
-  }
 
   return (
     <>
       <Script
         src="https://cdn.jsdelivr.net/npm/monaco-editor/min/vs/loader.js"
-        onLoad={() => setIsScriptLoaded(true)}
+        onLoad={async () => {
+          setIsScriptLoaded(true);
+          const result = await fetchSubmissions();
+          console.log("Fetched submission data:", result);
+          setSubmission(result[0]); // use the first submission
+        }}
       />
 
       <div className="min-h-screen text-white">
@@ -351,15 +345,6 @@ export default function Code_Viewer() {
                       <span>Run Code</span>
                     </div>
                   )}
-                </button>
-
-                <button
-                  className="px-6 py-2 bg-gradient-to-r from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                  onClick={SubmitToDatabase}
-                >
-                  <div className="flex items-center space-x-2">
-                    <span>Submit Code</span>
-                  </div>
                 </button>
               </div>
             </header>
