@@ -15,7 +15,7 @@ export default async function Main({params}) {
         const userResult = await pool.query('SELECT * FROM assignments where id = $1', [params.assignmentId]);
 
         if (userResult.rowCount === 0) {
-          return <div>Haha. Thanks for trying but UR ACCESS CODE IS NOT CORRECT! MONKET IDIOT FU**</div>
+          return <div>Assignment not found</div>
         } else {
                             return <IDE />;
 

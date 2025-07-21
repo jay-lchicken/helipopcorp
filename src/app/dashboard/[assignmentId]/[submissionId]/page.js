@@ -39,7 +39,7 @@ const user = await response.users.getUser(userId);
     );
         console.log(result);
          if (result.rowCount === 0) {
-          return <div>Haha. Thanks for trying but ur access is denied</div>
+          return <div>Thanks for trying but ur access is denied</div>
         } else {
                             return <IDE2 data={result.rows[0]} />;
 
