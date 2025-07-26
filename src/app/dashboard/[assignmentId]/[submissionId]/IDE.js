@@ -80,6 +80,11 @@ export default function IDE2({data}) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState(63); // Default to JavaScript
   const [selectedTheme, setSelectedTheme] = useState("vs-dark");
+  const [showGradingForm, setShowGradingForm] = useState(false);
+const [grade, setGrade] = useState('');
+const [feedback, setFeedback] = useState('');
+const [isSubmittingGrade, setIsSubmittingGrade] = useState(false);
+
   useEffect(() => {
   if (data && editorRef.current && monacoRef.current && isEditorLoaded) {
     const codeToUse = data.code || getDefaultCode(data.language_id);
@@ -320,7 +325,56 @@ export default function IDE2({data}) {
 
           <div className="flex flex-col h-screen">
                         <header className="flex items-center justify-between px-6 py-4 border-b border-gray-700/50 bg-gray-900/50 backdrop-blur-sm">
-                                                    <h1>Student's Email: {data.user_id}</h1>
+                                                   <div className=" rounded-lg shadow-sm border border-gray-200 p-6">
+  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    {/* Student Info Section */}
+    <div className="flex items-center space-x-3">
+      <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full">
+        <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+      </div>
+      <div>
+        <p className="text-sm  font-medium text-white">Student Email</p>
+        <p className="text-lg font-semibold text-white">{data.user_id}</p>
+      </div>
+    </div>
+
+    {/* Score Section */}
+    <div className="flex items-center">
+      {data.score && data.total_score ? (
+        <div className="text-right">
+          <p className="text-sm text-white font-medium">Score</p>
+          <div className="flex items-center space-x-2">
+            <span className="text-2xl font-bold text-white">
+              {data.score}/{data.total_score}
+            </span>
+            <div className="flex items-center">
+              <div className="w-16 bg-gray-200 rounded-full h-2">
+                <div
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${(data.score / data.total_score) * 100}%` }}
+                ></div>
+              </div>
+              <span className="ml-2 text-sm text-white">
+                {Math.round((data.score / data.total_score) * 100)}%
+              </span>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="flex items-center space-x-2 px-4 py-2 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span className="text-yellow-800 font-medium">Pending Grading</span>
+        </div>
+      )}
+    </div>
+  </div>
+</div>
+
+
 
                         </header>
 
@@ -358,6 +412,13 @@ export default function IDE2({data}) {
                     </option>
                   ))}
                 </select>
+                <button
+  onClick={() => setShowGradingForm(true)}
+  className="px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-medium rounded-lg transition-colors duration-200 text-sm shadow-lg hover:shadow-xl"
+>
+  Grade Submission
+</button>
+
 
                 <button
                   onClick={handleClearTerminal}
@@ -435,6 +496,187 @@ export default function IDE2({data}) {
               </div>
             </div>
           </div>
+          {showGradingForm && (
+  <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div className="bg-slate-800/90 backdrop-blur-md border border-slate-700/50 rounded-2xl shadow-2xl w-full max-w-md relative">
+      <div className="p-8">
+        <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+          <svg className="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+          </svg>
+          Grade Submission
+        </h3>
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">
+              Student Email
+            </label>
+            <input
+              type="text"
+              value={data?.user_id || ''}
+              disabled
+              className="w-full px-4 py-3 bg-slate-700/30 border border-slate-600/50 rounded-xl text-slate-400 transition-all duration-300"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Score
+              </label>
+              <input
+                type="number"
+                placeholder="0"
+                min="0"
+                max={`${data.total_score}`}
+                value={grade}
+                onChange={(e) => setGrade(e.target.value)}
+                className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all duration-300"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Max Score
+              </label>
+              <input
+                type="number"
+                placeholder="100"
+                min="1"
+                value={data.total_score}
+                disabled
+                className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-slate-400 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all duration-300"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">
+              Feedback
+            </label>
+            <textarea
+              placeholder="Enter your feedback for the student..."
+              value={feedback}
+              onChange={(e) => setFeedback(e.target.value)}
+              rows={4}
+              className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all duration-300 resize-none"
+            />
+          </div>
+
+          {grade && data.total_score && (
+            <div className="bg-slate-700/30 rounded-xl p-4 border border-slate-600/30">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-300 font-medium">Grade Percentage:</span>
+                <span className={`text-lg font-bold ${
+                  (grade / data.total_score) * 100 >= 70 ? 'text-green-400' : 
+                  (grade / data.total_score) * 100 >= 50 ? 'text-yellow-400' : 'text-red-400'
+                }`}>
+                  {((grade / data.total_score) * 100).toFixed(1)}%
+                </span>
+              </div>
+              <div className="mt-2 bg-slate-600 rounded-full h-2 overflow-hidden">
+                <div
+                  className={`h-full transition-all duration-500 ${
+                    (grade / data.total_score) * 100 >= 70 ? 'bg-green-500' : 
+                    (grade / data.total_score) * 100 >= 50 ? 'bg-yellow-500' : 'bg-red-500'
+                  }`}
+                  style={{ width: `${Math.min((grade / data.total_score) * 100, 100)}%` }}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="flex justify-end gap-3 mt-8">
+          <button
+            onClick={() => {
+              setShowGradingForm(false);
+              setGrade('');
+              setFeedback('');
+            }}
+            className="px-6 py-3 bg-slate-600/50 hover:bg-slate-600/70 text-white rounded-xl font-semibold transition-all duration-300 border border-slate-500/50"
+          >
+            Cancel
+          </button>
+
+          <button
+            onClick={async () => {
+              if (!grade.trim()) {
+                alert("Grade is required");
+                return;
+              }
+
+              if (parseFloat(grade) > parseFloat(data.total_score)) {
+                alert("Grade cannot exceed maximum score");
+                return;
+              }
+              if (!feedback.trim()) {
+                alert("Feedback is required");
+                return;
+              }
+
+              setIsSubmittingGrade(true);
+
+              // Here you would call your grading API
+             const res = await fetch("/api/GradeCode", {
+                                            method: "POST",
+                                            headers: {"Content-Type": "application/json"},
+                                            body: JSON.stringify({
+                                                score: grade,
+                                              feedback: feedback,
+                                                submission_id: data.submission_id,
+                                            }),
+                                        });
+
+                                        const resu = await res.json();
+                                        if (resu.error){
+                                            alert(`Error: ${resu.error}`);
+                                            setIsSubmittingGrade(false);
+                                            setShowGradingForm(false);
+              setGrade('');
+              setFeedback('');
+              setIsSubmittingGrade(false);
+                                            return;
+                                        }else{
+                                                        alert(`Grade submitted successfully!\nScore: ${grade}/${data.total_score} (${((grade/data.total_score)*100).toFixed(1)}%)`);
+                                                        setShowGradingForm(false);
+              setGrade('');
+              setFeedback('');
+              setIsSubmittingGrade(false);
+
+                                          }
+
+              // Simulate API call
+
+
+
+            }}
+            className="group px-6 py-3 bg-gradient-to-r disabled:opacity-50 from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl relative overflow-hidden"
+            disabled={isSubmittingGrade}
+          >
+            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <span className="relative flex items-center gap-2">
+              {isSubmittingGrade ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Submitting...
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  Submit Grade
+                </>
+              )}
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
         </SignedIn>
       </div>
     </>

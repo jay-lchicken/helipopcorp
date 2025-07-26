@@ -25,18 +25,23 @@ const user = await response.users.getUser(userId);
 
 
         const result = await pool.query(
-      `SELECT 
-         hash_userid_email,
-         name AS user_id, 
-         id, 
-         date_created AS created_at, 
-         code, 
-         assignment_id, 
-         language_id
-       FROM submissions 
-       WHERE assignment_id = $1 AND id = $2 AND hash_userid_email = $3`,
-      [assignmentId, submissionId, hash]
-    );
+  `SELECT 
+     s.hash_userid_email,
+     s.name AS user_id, 
+     s.id, 
+     s.date_created AS created_at, 
+     s.code, 
+     s.assignment_id, 
+     s.language_id,
+     s.id AS submission_id,
+     s.score,
+     s.feedback,
+     a.total_score
+   FROM submissions s
+   JOIN assignments a ON s.assignment_id = a.id
+   WHERE s.assignment_id = $1 AND s.id = $2 AND s.hash_userid_email = $3`,
+  [assignmentId, submissionId, hash]
+);
         console.log(result);
          if (result.rowCount === 0) {
           return <div>Thanks for trying but ur access is denied</div>
