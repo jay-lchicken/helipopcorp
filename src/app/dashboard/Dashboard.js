@@ -17,7 +17,7 @@ export default function TeacherDashboardPage({serverAssignments}) {
     const [isAddingAssignment, setIsAddingAssignment] = useState(false);
     const [isDeletingAssignment, setIsDeletingAssignment] = useState(false);
     const [isEditingAssignment, setIsEditingAssignment] = useState(false); // New state for editing loading
-
+    const [totalScore, setTotalScore] = useState(10);
     useEffect(() => {
         setIsLoaded(true);
     }, []);
@@ -259,6 +259,18 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                     />
                                 </div>
                             </div>
+                            <div className="space-y-4 mt-2">
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-300 mb-2">Assignment Total Score</label>
+                                    <input
+    type="number"
+    placeholder="Enter assignment total score"
+    value={totalScore}
+    onChange={(e) => setTotalScore(e.target.value.replace(/\D/g, ''))}
+    className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300"
+/>
+                                </div>
+                            </div>
 
                             <div className="flex justify-end gap-3 mt-8">
                                 <button
@@ -282,6 +294,7 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                             headers: {"Content-Type": "application/json"},
                                             body: JSON.stringify({
                                                 name: newTitle,
+                                                totalScore: totalScore,
                                             }),
                                         });
 

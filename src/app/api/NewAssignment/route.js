@@ -6,7 +6,7 @@ import * as crypto from "node:crypto";
 export async function POST(req) {
     const { userId, sessionClaims } = getAuth(req);
     const body = await req.json();
-    const { name } = body;
+    const { name, totalScore } = body;
     const email = sessionClaims?.email;
 
     if (!userId || !email) {
@@ -18,10 +18,10 @@ export async function POST(req) {
 
   try {
     const assignment = await pool.query(
-      `INSERT INTO assignments (name, hash_userid_email)
-       VALUES ($1, $2)
+      `INSERT INTO assignments (name, hash_userid_email, total_score)
+       VALUES ($1, $2, $3)
        RETURNING *`,
-      [name, hash]
+      [name, hash, totalScore]
     );
     console.log(assignment.rows[0]);
     return Response.json(assignment.rows[0]);
