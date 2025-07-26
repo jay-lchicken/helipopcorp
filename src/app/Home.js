@@ -1,10 +1,20 @@
 "use client"
 import { useEffect, useState } from "react";
 import { SignedIn, SignedOut, SignInButton, SignUpButton, SignOutButton } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { useEffect as useEffectRouter } from "react";
 
 export default function Home({DBUser}) {
   const [dbUser, setDbUser] = useState(DBUser);
   const [isLoaded, setIsLoaded] = useState(false);
+
+  const router = useRouter();
+
+  useEffectRouter(() => {
+    if (isLoaded && dbUser?.role === "teacher") {
+      router.push("/dashboard");
+    }
+  }, [dbUser, router, isLoaded]);
 
   useEffect(() => {
     setIsLoaded(true);
@@ -90,7 +100,7 @@ export default function Home({DBUser}) {
                     </div>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-lg">
                       <span className="px-3 py-1 bg-blue-500/20 text-blue-400 font-semibold rounded-lg border border-blue-500/30">
-                        {dbUser.role}
+                        {dbUser?.role}
                       </span>
                       <span className="text-slate-400 hidden sm:block">•</span>
                       <span className="text-slate-300">{dbUser.email}</span>
@@ -99,18 +109,34 @@ export default function Home({DBUser}) {
                 )}
 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                  <button
-                    className="group w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl shadow-lg hover:from-blue-700 hover:to-blue-800 hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 font-semibold relative overflow-hidden"
-                    onClick={() => window.location.href = "/ide"}
-                  >
-                    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <span className="relative flex items-center justify-center gap-2 whitespace-nowrap">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                      </svg>
-                      Go to IDE
-                    </span>
-                  </button>
+                  {dbUser?.role === "teacher" && (
+                    <button
+                      className="group w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl shadow-lg hover:from-blue-700 hover:to-blue-800 hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 font-semibold relative overflow-hidden"
+                      onClick={() => window.location.href = "/dashboard"}
+                    >
+                      <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <span className="relative flex items-center justify-center gap-2 whitespace-nowrap">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                        </svg>
+                        Go to dashboard
+                      </span>
+                    </button>
+                  )}
+                  {dbUser?.role === "student" && (
+                    <button
+                      className="group w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl shadow-lg hover:from-blue-700 hover:to-blue-800 hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 font-semibold relative overflow-hidden"
+                      onClick={() => window.location.href = "/ide"}
+                    >
+                      <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <span className="relative flex items-center justify-center gap-2 whitespace-nowrap">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                        </svg>
+                        Go to IDE
+                      </span>
+                    </button>
+                  )}
 
                   <SignOutButton
                     className="group w-full sm:w-auto px-10 py-4 bg-slate-700/50 text-white rounded-xl shadow-lg hover:bg-slate-600/50 hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 font-semibold border border-slate-600/50 relative overflow-hidden"

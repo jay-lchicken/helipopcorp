@@ -59,7 +59,15 @@ export default function getIDPage({}) {
 
           <SignedIn>
             <div className="bg-slate-800/40 backdrop-blur-md rounded-2xl p-10 shadow-2xl relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-slate-500/5"></div>
+              <div className="flex justify-center mb-6">
+                <img
+                  className="w-[280px] h-auto drop-shadow-2xl transform transition-all duration-500 group-hover:scale-105"
+                  src="/klc.png"
+                  alt="KLC Logo"
+                />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-slate-500/5">
+              </div>
               <div className="relative z-10">
                 <h2 className="text-3xl font-semibold text-center mb-8 text-slate-200">
                   Enter Assignment ID

@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import pool from "@/lib/db";
 import IDE2 from "@/app/dashboard/[assignmentId]/[submissionId]/IDE";
 import crypto from "node:crypto";
-export default async function Main({params}) {
+export default async function Main({ params }) {
     const { userId } = await auth();
 
     const assignmentId = params.assignmentId;
@@ -39,7 +39,7 @@ const user = await response.users.getUser(userId);
     );
         console.log(result);
          if (result.rowCount === 0) {
-          return <div>Haha. Thanks for trying but ur access is denied</div>
+          return <div>Thanks for trying but ur access is denied</div>
         } else {
                             return <IDE2 data={result.rows[0]} />;
 
