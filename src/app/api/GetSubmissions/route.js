@@ -29,7 +29,8 @@ export async function GET(req) {
          date_created AS created_at, 
          code, 
          assignment_id, 
-         language_id
+         language_id,
+         score
        FROM submissions 
        WHERE assignment_id = $1 AND hash_userid_email = $2`,
       [assignmentID, hash]

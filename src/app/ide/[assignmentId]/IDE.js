@@ -81,6 +81,7 @@ export default function IDE() {
   const [selectedLanguage, setSelectedLanguage] = useState(63); // Default to JavaScript
   const [selectedTheme, setSelectedTheme] = useState("vs-dark");
 
+
   // Get default code for language
   const getDefaultCode = (langId) => {
     const language = JUDGE0_LANGUAGES[langId];
@@ -229,6 +230,7 @@ export default function IDE() {
 
   const SubmitToDatabase = async () => {
     // Debug: Ensure assignmentId is not undefined
+    setIsSubmitting(true);
     console.log("Submitting to database with assignmentId:", assignmentId);
     const res = await fetch("/api/SubmitCode", {
       method: "POST",
@@ -361,11 +363,12 @@ export default function IDE() {
                 </button>
 
                 <button
-                  className="px-6 py-2 bg-gradient-to-r from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  className="px-6 py-2 bg-gradient-to-r disabled:opacity-50 from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                   onClick={async () => {
                     await SubmitToDatabase();
                     window.location.href = `./${assignmentId}/submitted`;
                   }}
+                  disabled={isSubmitting}
                 >
                   <div className="flex items-center space-x-2">
                     <span>Submit Code</span>

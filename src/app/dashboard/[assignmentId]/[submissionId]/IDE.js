@@ -625,6 +625,9 @@ const [isSubmittingGrade, setIsSubmittingGrade] = useState(false);
                                                 score: grade,
                                               feedback: feedback,
                                                 submission_id: data.submission_id,
+                                              student_email: data.user_id,
+                                                assignment_id: assignmentId,
+                                              total_score: data.total_score,
                                             }),
                                         });
 
@@ -639,6 +642,7 @@ const [isSubmittingGrade, setIsSubmittingGrade] = useState(false);
                                             return;
                                         }else{
                                                         alert(`Grade submitted successfully!\nScore: ${grade}/${data.total_score} (${((grade/data.total_score)*100).toFixed(1)}%)`);
+                                                        window.location.reload();
                                                         setShowGradingForm(false);
               setGrade('');
               setFeedback('');

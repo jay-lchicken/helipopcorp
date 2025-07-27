@@ -48,9 +48,19 @@ function SubmissionsList({ assignmentID, assignmentName }) {
           }}
         >
           <div className="flex items-center justify-between mb-2">
-            <span className="px-2 py-1 bg-blue-500/20 text-blue-300 rounded-lg border border-blue-500/30 text-xs font-semibold">
+            <span >
+              <span className="px-2 py-1 bg-blue-500/20 text-blue-300 rounded-lg border border-blue-500/30 text-xs font-semibold mr-2">
               User: {sub.user_id}
             </span>
+            {sub.score !== null ? (<span className="px-2 py-1 bg-green-500/20 text-green-700 rounded-lg border border-green-500/30 text-xs font-semibold">
+  Graded
+</span>): (<span className="px-2 py-1 bg-yellow-400/20 text-yellow-700 rounded-lg border border-yellow-400/30 text-xs font-semibold">
+  To be graded
+</span>)
+              }
+            </span>
+
+
             <span className="px-2 py-1 bg-gray-700/50 text-gray-300 rounded-lg border border-gray-600/40 text-xs font-mono">
               {new Date(sub.created_at).toLocaleString()}
             </span>
