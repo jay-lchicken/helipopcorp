@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 import StudentDashboardPage from "./assignment";
 
 export default async function Main() {
-    const { userId, sessionClaims } = auth();
+    const { userId, sessionClaims } = await auth();
     var user;
 
     if (!userId) {
@@ -32,10 +32,11 @@ export default async function Main() {
         console.error("Failed to fetch data from DB", err);
     }
 
-    const userResult = await pool.query('SELECT *, a.name as assignment_name FROM submissions JOIN assignments a ON submissions.assignment_id = a.id WHERE submissions.name = $1;', [email]);
+    const userResult = await pool.query('SELECT *, a.name as assignment_name, submissions.id as submission_id FROM submissions JOIN assignments a ON submissions.assignment_id = a.id WHERE submissions.name = $1', [email]);
+    console.log("userResult:", userResult);
     return (
         <StudentDashboardPage
-            submissions={userResult.rows}
+            serverSubmissions={userResult.rows}
         />
     );
 }
