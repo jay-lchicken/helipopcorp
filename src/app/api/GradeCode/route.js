@@ -46,7 +46,7 @@ export async function POST(req) {
             `UPDATE submissions
 SET score = $1,
 feedback = $2
-WHERE id = $1;`,
+WHERE id = $3;`,
             [parseInt(score, 0), feedback, submission_id]
         );
         return NextResponse.json(assignments.rows);

@@ -1,5 +1,4 @@
 import { auth } from "@clerk/nextjs/server";
-import Assignment from "./assignment";
 import { cookies } from "next/headers";
 import pool from "@/lib/db";
 import { NextResponse } from "next/server";
@@ -32,7 +31,14 @@ export default async function Main() {
         console.error("Failed to fetch data from DB", err);
     }
 
-    const userResult = await pool.query('SELECT *, a.name as assignment_name, submissions.id as submission_id FROM submissions JOIN assignments a ON submissions.assignment_id = a.id WHERE submissions.name = $1', [email]);
+    const userResult = await pool.query(
+        `SELECT *, 
+               a.name as assignment_name,
+               submissions.date_created as submission_date_created,
+               submissions.id as submission_id
+        FROM submissions
+        JOIN assignments a ON submissions.assignment_id = a.id
+        WHERE submissions.name = $1`, [email]);
     console.log("userResult:", userResult);
     return (
         <StudentDashboardPage

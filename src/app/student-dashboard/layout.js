@@ -22,7 +22,7 @@ export default function RootLayout({ children }) {
         <body suppressHydrationWarning>
             <SignedIn>
                 <div className="absolute top-4 right-4 z-50">
-                <SignOutButton redirectUrl="/dashboard">
+                <SignOutButton redirectUrl="/student-dashboard">
                     <button
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 font-semibold"
                     >

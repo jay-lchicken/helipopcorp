@@ -89,36 +89,6 @@ export default function StudentDashboardPage({serverSubmissions}) {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                            <div className="bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6 hover:bg-slate-800/40 transition-all duration-300">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-slate-400 text-sm">Total Submissions</p>
-                                        <p className="text-2xl font-bold text-white">{submissions.length}</p>
-                                    </div>
-                                    <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                                        <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                        </svg>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6 hover:bg-slate-800/40 transition-all duration-300">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-slate-400 text-sm">Total Submissions</p>
-                                        <p className="text-2xl font-bold text-white">0</p>
-                                    </div>
-                                    <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center">
-                                        <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                                        </svg>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                         <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-2xl">
                             <div className="flex items-center justify-between mb-6">
                                 <div className="flex items-center gap-3">
@@ -144,19 +114,31 @@ export default function StudentDashboardPage({serverSubmissions}) {
                                     {submissions.map((submission) => (
                                         <div 
                                         onClick={() => {
-                                            window.location.href = `/dashboard/${submission.submission_id}`;
+                                            window.location.href = `/student-dashboard/${submission.submission_id}`;
                                         }}
                                         key={submission.id} className="group bg-slate-700/30 border border-slate-600/30 rounded-xl p-6 hover:bg-slate-700/40 hover:border-slate-600/50 transition-all duration-300">
                                             <div className="flex items-start justify-between">
                                                 <div className="flex-1">
-                                                    <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-blue-400 transition-colors duration-300">
-                                                        {submission.name}
-                                                    </h3>
+                                                    <div className="flex items-center gap-2 text-lg font-semibold text-white mb-2 group-hover:text-blue-400 transition-colors duration-300">
+                                                        <h3 className="inline text-lg font-semibold text-white group-hover:text-blue-400 transition-colors duration-300">
+                                                            {submission.name}
+                                                        </h3>
+                                                        <span className='text-lg font-semibold'>Score: </span>
+                                                        <span
+                                                            className={`text-lg font-semibold ${
+                                                                submission.total_score && submission.score / submission.total_score >= 0.6
+                                                                ? 'text-green-400'
+                                                                : 'text-orange-400'
+                                                            }`}
+                                                        >{Number.isFinite(submission.score) ? submission.score : '—'} / {Number.isFinite(submission.total_score) ? submission.total_score : '—'}
+                                                        </span>
+                                                    </div>
                                                     <div className="flex items-center gap-4 text-sm">
                                                         <span className="text-slate-400">•</span>
-                                                        <span className="text-slate-400">{new Date(submission.date_created).toLocaleString()}</span>
+                                                        <span className="text-slate-400">{new Date(submission.submission_date_created).toLocaleString()}</span>
                                                     </div>
                                                 </div>
+                                                
                                                 <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                                     <button 
                                                     onClick={(e) => {
