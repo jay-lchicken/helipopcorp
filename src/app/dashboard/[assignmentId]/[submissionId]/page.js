@@ -36,10 +36,11 @@ const user = await response.users.getUser(userId);
      s.id AS submission_id,
      s.score,
      s.feedback,
-     a.total_score
+     a.total_score,
+     a.hash_userid_email
    FROM submissions s
    JOIN assignments a ON s.assignment_id = a.id
-   WHERE s.assignment_id = $1 AND s.id = $2 AND s.hash_userid_email = $3`,
+   WHERE s.assignment_id = $1 AND s.id = $2 AND a.hash_userid_email = $3`,
   [assignmentId, submissionId, hash]
 );
         console.log(result);

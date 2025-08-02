@@ -22,17 +22,18 @@ export async function GET(req) {
 
   try {
     const result = await pool.query(
-      `SELECT 
-         hash_userid_email,
-         name AS user_id, 
-         id, 
-         date_created AS created_at, 
-         code, 
-         assignment_id, 
-         language_id,
-         score
-       FROM submissions 
-       WHERE assignment_id = $1 AND hash_userid_email = $2`,
+      `SELECT
+    a.hash_userid_email,
+    s.name AS user_id,
+    s.id,
+    s.date_created AS created_at,
+    s.code,
+    s.assignment_id,
+    s.language_id,
+    s.score
+FROM submissions s
+         JOIN assignments a ON s.assignment_id = a.id
+WHERE s.assignment_id = $1 AND a.hash_userid_email = $2`,
       [assignmentID, hash]
     );
     return NextResponse.json(result.rows);

@@ -55,8 +55,11 @@ WHERE id = $3;`,
 const assignments = await pool.query(
   `UPDATE submissions
 SET score = $1,
-feedback = $2
-WHERE id = $3 AND hash_userid_email = $4;`,
+    feedback = $2
+FROM assignments AS a
+WHERE submissions.assignment_id = a.id
+  AND submissions.id = $3
+  AND a.hash_userid_email = $4;`,
   [parseInt(score, 0), feedback, submission_id, hash]
 );
     console.log(score, submission_id, hash)

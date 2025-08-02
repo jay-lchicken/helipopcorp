@@ -2,8 +2,8 @@ import { auth, clerkClient } from "@clerk/nextjs/server"; // use clerkClient
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import pool from "@/lib/db";
-import IDE2 from "@/app/dashboard/[assignmentId]/[submissionId]/IDE";
 import crypto from "node:crypto";
+import IDE3 from "@/app/student-dashboard/[submissionId]/IDE";
 export default async function Main({ params }) {
     const { userId, sessionClaims } = await auth();
 
@@ -41,7 +41,7 @@ const user = await response.users.getUser(userId);
         if (result.rowCount === 0) {
             return <div>Thanks for trying but ur access is denied</div>
         } else {
-            return <IDE2 data={result.rows[0]} />;
+            return <IDE3 data={result.rows[0]} />;
         }
 
     } catch (err) {

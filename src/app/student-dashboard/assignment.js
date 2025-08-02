@@ -139,55 +139,7 @@ export default function StudentDashboardPage({serverSubmissions}) {
                                                     </div>
                                                 </div>
                                                 
-                                                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                    <button 
-                                                    onClick={(e) => {
-                                                        e.stopPropagation(); // Prevent navigation
-                                                        setEditingSubmission(submission);
-                                                        setNewTitle(submission.name);
-                                                    }}
-                                                    className="p-2 hover:bg-slate-600/50 rounded-lg transition-colors duration-200">
-                                                        <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                        </svg>
-                                                    </button>
-                                                    <button className="p-2 hover:bg-slate-600/50 rounded-lg transition-colors duration-200">
-                                                        <svg
-                                                        onClick={async (e) => {
-                                                            e.stopPropagation();
-                                                            setIsDeletingSubmission(true);
-                                                            const res = await fetch("/api/DeleteSubmission", {
-                                                                method: "POST",
-                                                                headers: {"Content-Type": "application/json"},
-                                                                body: JSON.stringify({
-                                                                    name: submission.name,
-                                                                    level: submission.level,
-                                                                    subject: submission.subject, 
-                                                                }),
-                                                            });
 
-                                                            const data = await res.json();
-
-                                                            if (data.error) {
-                                                                alert("Error deleting submission: " + data.error);
-                                                            } else {
-                                                                setSubmissions((prev) => 
-                                                                    prev.filter((a) => 
-                                                                        !(
-                                                                            a.name === submission.name
-                                                                            && a.level === submission.level
-                                                                            && a.subject === submission.subject
-                                                                        )
-                                                                    ),
-                                                                );
-                                                            }
-                                                            setIsDeletingSubmission(false);
-                                                            }}
-                                                            className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                        </svg>
-                                                    </button>
-                                                </div>
                                             </div>
                                         </div>
                                     ))}
@@ -198,87 +150,7 @@ export default function StudentDashboardPage({serverSubmissions}) {
                 )}
             </SignedIn>
 
-            {isEditingSubmission && (
-                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-slate-800/90 backdrop-blur-md border border-slate-700/50 rounded-2xl shadow-2xl w-full max-w-md relative">
-                    <div className="p-8">
-                        <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-                        <svg className="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                        Edit Submission
-                        </h3>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-2">Submission Title</label>
-                                <input
-                                type="text"
-                                placeholder="Enter submission title"
-                                value={newTitle}
-                                onChange={(e) => setNewTitle(e.target.value)}
-                                className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300"
-                                />
-                            </div>
-                        </div>
-                
-                        <div className="flex justify-end gap-3 mt-8">
-                        <button
-                            onClick={() => setEditingSubmission(null)}
-                            className="px-6 py-3 bg-slate-600/50 hover:bg-slate-600/70 text-white rounded-xl font-semibold transition-all duration-300 border border-slate-500/50"
-                        >
-                            Cancel
-                        </button>
-                
-                        <button
-                            onClick={async () => {
-                                if (!newTitle.trim()) {
-                                    alert("Title Required");
-                                    return;
-                                }
 
-                                setIsEditingSubmission(true); // Set loading state for editing
-                                try {
-                                    const res = await fetch("/api/EditSubmission", {
-                                        method: "POST",
-                                        headers: { "Content-Type": "application/json" },
-                                        body: JSON.stringify({
-                                            id: editingSubmission.id,
-                                            name: newTitle,
-                                        }),
-                                    });
-
-                                    const data = await res.json();
-                                    if (data.error) {
-                                        alert("Error editing submission: " + data.error);
-                                    } else {
-                                        setSubmissions((prev) =>
-                                            prev.map((a) =>
-                                                a.id === editingSubmission.id
-                                                    ? { ...a, name: newTitle }
-                                                    : a
-                                            )
-                                        );
-                                        setNewTitle('');
-                                        setEditingSubmission(null);
-                                    }
-                                } catch (err) {
-                                    console.error("Error updating submission:", err);
-                                    alert("An unexpected error occurred. Please try again.");
-                                } finally {
-                                    setIsEditingSubmission(false);
-                                }
-                            }}
-                            className="group px-6 py-3 bg-gradient-to-r disabled:opacity-50 from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl relative overflow-hidden"
-                            disabled={isEditingSubmission} 
-                        >
-                            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            <span className="relative">Save Changes</span>
-                        </button>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
