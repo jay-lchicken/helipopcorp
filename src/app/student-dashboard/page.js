@@ -1,8 +1,9 @@
-import { auth } from "@clerk/nextjs/server";
+import {auth, clerkClient} from "@clerk/nextjs/server";
 import { cookies } from "next/headers";
 import pool from "@/lib/db";
 import { NextResponse } from "next/server";
 import StudentDashboardPage from "./assignment";
+import crypto from "node:crypto";
 
 export default async function Main() {
     const { userId, sessionClaims } = await auth();
@@ -13,6 +14,8 @@ export default async function Main() {
     }
     console.log("sessionClaims:", sessionClaims);
     const email = sessionClaims?.email;
+
+    const hash = crypto.createHash('sha256').update(email+userId).digest('hex');
 
     try {
         const cookieStore = await cookies();
@@ -38,7 +41,7 @@ export default async function Main() {
                submissions.id as submission_id
         FROM submissions
         JOIN assignments a ON submissions.assignment_id = a.id
-        WHERE submissions.name = $1`, [email]);
+        WHERE submissions.name = $1 AND submissions.hash_userid_email = $2`, [email, hash]);
     console.log("userResult:", userResult);
     return (
         <StudentDashboardPage
