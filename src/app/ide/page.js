@@ -96,6 +96,13 @@ export default function getIDPage({}) {
                   >
                     Submit
                   </button>
+                  <button
+  type="button"
+  className="caption px-4 py-2 bg-transparent text-gray-400 border border-gray-400 rounded-lg hover:bg-blue-600 hover:text-white transition-colors duration-200 font-semibold flex items-center gap-2"
+  onClick={() => window.location.href = "/ide/IDE"}
+>
+  This is not for an assignment
+</button>
                 </form>
               </div>
             </div>

@@ -45,7 +45,7 @@ export default function Home({DBUser}) {
           </div>
         </div>
 
-        <div className={`w-full max-w-lg mx-auto transition-all duration-1000 delay-300 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+        <div className={`w-full max-w-3xl mx-auto transition-all duration-1000 delay-300 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <SignedOut>
             <div className="bg-slate-800/40 backdrop-blur-md border border-slate-700/50 rounded-2xl p-10 shadow-2xl relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-slate-500/5"></div>
@@ -89,7 +89,7 @@ export default function Home({DBUser}) {
           </SignedOut>
 
           <SignedIn>
-            <div className="bg-slate-800/40 backdrop-blur-md border border-slate-700/50 rounded-2xl p-10 shadow-2xl relative overflow-hidden">
+            <div className="bg-slate-800/40 backdrop-blur-md  border border-slate-700/50 rounded-2xl p-10 shadow-2xl relative overflow-hidden ">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-slate-500/5"></div>
               <div className="relative z-10">
                 {dbUser && (
@@ -122,21 +122,38 @@ export default function Home({DBUser}) {
                         Go to dashboard
                       </span>
                     </button>
+
                   )}
                   {dbUser?.role === "student" && (
+
                     <button
                       className="group w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl shadow-lg hover:from-blue-700 hover:to-blue-800 hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 font-semibold relative overflow-hidden"
-                      onClick={() => window.location.href = "/ide"}
+                      onClick={() => window.location.href = "/student-dashboard"}
                     >
                       <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                       <span className="relative flex items-center justify-center gap-2 whitespace-nowrap">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                         </svg>
-                        Go to IDE
+                        Go to Dashboard
                       </span>
                     </button>
                   )}
+                  <button
+                      className="group w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl shadow-lg hover:from-blue-700 hover:to-blue-800 hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 font-semibold relative overflow-hidden"
+                      onClick={() => window.location.href = "/ide"}
+                    >
+                      <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <span className="relative flex items-center justify-center gap-2 whitespace-nowrap">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <rect x="3" y="5" width="18" height="14" rx="2" strokeWidth={2} stroke="currentColor" fill="none"/>
+  <path d="M7 9l3 3-3 3" strokeWidth={2} stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+  <circle cx="17" cy="12" r="1" fill="currentColor"/>
+</svg>
+                        Go to IDE
+                      </span>
+                    </button>
+
 
                   <SignOutButton
                     className="group w-full sm:w-auto px-10 py-4 bg-slate-700/50 text-white rounded-xl shadow-lg hover:bg-slate-600/50 hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 font-semibold border border-slate-600/50 relative overflow-hidden"
