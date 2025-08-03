@@ -73,6 +73,7 @@ export default function IDE3({data}) {
   const monacoRef = useRef(null);
   const termRef = useRef(null);
   const xtermRef = useRef(null);
+  const [stdin, setStdin] = useState("");
   const [isEditorLoaded, setIsEditorLoaded] = useState(false);
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
   const [isTerminalReady, setIsTerminalReady] = useState(false);
@@ -179,7 +180,7 @@ const [isSubmittingGrade, setIsSubmittingGrade] = useState(false);
       if (typeof window !== "undefined" && termRef.current && !xtermRef.current) {
         const { Terminal } = await import("xterm");
         xtermRef.current = new Terminal({
-          cols: 80,
+          cols: 100,
           rows: 15,
           theme: {
             background: "#1a1a1a",
@@ -207,7 +208,7 @@ const [isSubmittingGrade, setIsSubmittingGrade] = useState(false);
     const res = await fetch("/api/RunCode", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ source_code: code, language_id: selectedLanguage }),
+      body: JSON.stringify({ source_code: code, language_id: selectedLanguage, stdin: Buffer.from(stdin.trim(), "utf-8").toString()}),
     });
 
     const data = await res.json();
@@ -224,6 +225,8 @@ const [isSubmittingGrade, setIsSubmittingGrade] = useState(false);
     if (!isTerminalReady) return;
     if (monacoRef.current) {
       const value = monacoRef.current.getValue();
+
+      console.log("Submitting with stdin:", JSON.stringify(stdin));
 
       xtermRef.current.clear();
       xtermRef.current.write("⚡ \x1b[33mExecuting code...\x1b[0m\r\n");
@@ -322,61 +325,15 @@ const [isSubmittingGrade, setIsSubmittingGrade] = useState(false);
               </div>
             </div>
           )}
-
           <div className="flex flex-col h-screen">
-                        <header className="flex items-center justify-between px-6 py-4 border-b border-gray-700/50 bg-gray-900/50 backdrop-blur-sm">
-                                                   <div className=" rounded-lg shadow-sm border border-gray-200 p-6">
-  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-    {/* Student Info Section */}
-    <div className="flex items-center space-x-3">
-      <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full">
-        <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-        </svg>
-      </div>
-      <div>
-        <p className="text-sm  font-medium text-white">Student Email</p>
-        <p className="text-lg font-semibold text-white">{data.user_id}</p>
-      </div>
-    </div>
-
-    {/* Score Section */}
-    <div className="flex items-center">
-      {data.score && data.total_score ? (
-        <div className="text-right">
-          <p className="text-sm text-white font-medium">Score</p>
-          <div className="flex items-center space-x-2">
-            <span className="text-2xl font-bold text-white">
-              {data.score}/{data.total_score}
-            </span>
-            <div className="flex items-center">
-              <div className="w-16 bg-gray-200 rounded-full h-2">
-                <div
-                  className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${(data.score / data.total_score) * 100}%` }}
-                ></div>
-              </div>
-              <span className="ml-2 text-sm text-white">
-                {Math.round((data.score / data.total_score) * 100)}%
-              </span>
+          <header className="flex items-center justify-between px-6 py-4 border-b border-gray-700/50 bg-gray-900/50 backdrop-blur-sm">
+            <div className="rounded-lg shadow-sm p-6">
+              <p>placeholder</p>
             </div>
-          </div>
-        </div>
-      ) : (
-        <div className="flex items-center space-x-2 px-4 py-2 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span className="text-yellow-800 font-medium">Pending Grading</span>
-        </div>
-      )}
-    </div>
-  </div>
-</div>
 
 
 
-                        </header>
+        </header>
 
 
             <header className="flex items-center justify-between px-6 py-4 border-b border-gray-700/50 bg-gray-900/50 backdrop-blur-sm">
@@ -467,31 +424,37 @@ const [isSubmittingGrade, setIsSubmittingGrade] = useState(false);
               </div>
 
               <div className="flex flex-col">
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-lg font-semibold text-gray-200 flex items-center space-x-2">
-                    <span>💻</span>
-                    <span>Terminal Output</span>
-                  </h2>
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-2 h-2 rounded-full ${isTerminalReady ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                    <span className="text-sm text-gray-400">
-                      {isTerminalReady ? 'Ready' : 'Initializing...'}
-                    </span>
+                <div className="relative mb-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-lg font-semibold text-gray-200 flex items-center space-x-2">💻 Terminal Output</span>
+                    <div className="flex items-center space-x-2">
+                      <div className={`w-2 h-2 rounded-full ${isTerminalReady ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                      <span className="text-sm text-gray-400">
+                        {isTerminalReady ? 'Ready' : 'Initializing...'}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="absolute top-0 right-0 w-1/2 text-left">
+                    <span className="text-lg font-semibold text-gray-200">💻 Terminal Input</span>
                   </div>
                 </div>
 
-                <div
-                  ref={termRef}
-                  className="h-64 rounded-xl border border-gray-700/50 shadow-2xl overflow-hidden"
-                  style={{
-                    backgroundColor: "#1a1a1a",
-                  }}
-                />
+                <div className="flex justify-center space-x-4">
+                  <div
+                    ref={termRef}
+                    className="w-1/2 h-64 rounded-xl border border-gray-700/50 shadow-2xl overflow-hidden"
+                    style={{ backgroundColor: "#1a1a1a" }}
+                  />
+                  <textarea
+                    value={stdin}
+                    onChange={(e) => setStdin(e.target.value)}
+                    placeholder="Enter input here (make a newline for each input)"
+                    className="w-1/2 h-64 rounded-xl border border-gray-700/50 bg-[#1e1e1e] text-white p-2 resize-none shadow-2xl"
+                  />
+                </div>
               </div>
             </div>
           </div>
-
-
         </SignedIn>
       </div>
     </>

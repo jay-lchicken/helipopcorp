@@ -73,6 +73,7 @@ export default function IDE() {
   const monacoRef = useRef(null);
   const termRef = useRef(null);
   const xtermRef = useRef(null);
+  const [stdin, setStdin] = useState("");
   const [isEditorLoaded, setIsEditorLoaded] = useState(false);
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
   const [isTerminalReady, setIsTerminalReady] = useState(false);
@@ -182,7 +183,7 @@ export default function IDE() {
     const res = await fetch("/api/RunCode", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ source_code: code, language_id: selectedLanguage }),
+      body: JSON.stringify({ source_code: code, language_id: selectedLanguage, stdin: stdin }),
     });
 
     const data = await res.json();
@@ -400,26 +401,34 @@ export default function IDE() {
               </div>
 
               <div className="flex flex-col">
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-lg font-semibold text-gray-200 flex items-center space-x-2">
-                    <span>💻</span>
-                    <span>Terminal Output</span>
-                  </h2>
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-2 h-2 rounded-full ${isTerminalReady ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                    <span className="text-sm text-gray-400">
-                      {isTerminalReady ? 'Ready' : 'Initializing...'}
-                    </span>
+                <div className="relative mb-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-lg font-semibold text-gray-200 flex items-center space-x-2">💻 Terminal Output</span>
+                    <div className="flex items-center space-x-2">
+                      <div className={`w-2 h-2 rounded-full ${isTerminalReady ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                      <span className="text-sm text-gray-400">
+                        {isTerminalReady ? 'Ready' : 'Initializing...'}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="absolute top-0 right-0 w-1/2 text-left">
+                    <span className="text-lg font-semibold text-gray-200">💻 Terminal Input</span>
                   </div>
                 </div>
 
-                <div
-                  ref={termRef}
-                  className="h-64 rounded-xl border border-gray-700/50 shadow-2xl overflow-hidden"
-                  style={{
-                    backgroundColor: "#1a1a1a",
-                  }}
-                />
+                <div className="flex justify-center space-x-4">
+                  <div
+                    ref={termRef}
+                    className="w-1/2 h-64 rounded-xl border border-gray-700/50 shadow-2xl overflow-hidden"
+                    style={{ backgroundColor: "#1a1a1a" }}
+                  />
+                  <textarea
+                    value={stdin}
+                    onChange={(e) => setStdin(e.target.value)}
+                    placeholder="Enter input here (make a newline for each input)"
+                    className="w-1/2 h-64 rounded-xl border border-gray-700/50 bg-[#1e1e1e] text-white p-2 resize-none shadow-2xl"
+                  />
+                </div>
               </div>
             </div>
           </div>

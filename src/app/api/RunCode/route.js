@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(req) {
   const body = await req.json();
-  const { source_code, language_id } = body;
+  const { source_code, language_id, stdin} = body;
 
   const response = await fetch("https://judge0.techtime.coffee/submissions?base64_encoded=true&wait=true", {
     method: "POST",
@@ -10,7 +10,7 @@ export async function POST(req) {
     body: JSON.stringify({
       source_code: Buffer.from(source_code).toString("base64"),
       language_id: language_id || 63,
-      stdin: "",
+      stdin: Buffer.from(stdin).toString("base64"),
     }),
   });
 

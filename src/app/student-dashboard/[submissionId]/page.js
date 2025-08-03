@@ -7,7 +7,7 @@ import IDE3 from "@/app/student-dashboard/[submissionId]/IDE";
 export default async function Main({ params }) {
     const { userId, sessionClaims } = await auth();
 
-const submissionId = params.submissionId;
+const submissionId = await params.submissionId;
 
 const response = await clerkClient();
 const user = await response.users.getUser(userId);
