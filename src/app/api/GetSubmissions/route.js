@@ -13,7 +13,7 @@ export async function GET(req) {
         const hash = crypto.createHash('sha256').update(email+userId).digest('hex');
 
   const url = new URL(req.url);
-  const assignmentID = url.searchParams.get("assignmentID");
+  const assignmentID = url.searchParams.get("assignmentId");
 
   if (!assignmentID) {
     console.error("Missing query parameters:", { assignmentID });

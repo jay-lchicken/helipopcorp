@@ -82,13 +82,12 @@ export default function IDE3({data}) {
     cursorAccent: "#00ff00",
     selection: "rgba(255, 0.3)",
   });
-  const themeColoursRef = useRef(themeColours);
   const [isEditorLoaded, setIsEditorLoaded] = useState(false);
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
   const [isTerminalReady, setIsTerminalReady] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState(63); // Default to JavaScript
+  const [selectedLanguage, setSelectedLanguage] = useState(63);
   const [selectedTheme, setSelectedTheme] = useState("vs-dark");
 
   useEffect(() => {
@@ -174,14 +173,6 @@ export default function IDE3({data}) {
   };
 
   const handleThemeChange = (theme) => {
-    setSelectedTheme(theme);
-    if (monacoRef.current) {
-      window.monaco.editor.setTheme(theme);
-    }
-    if (isTerminalReady) {
-      updateTheme();
-    }
-
     const newColours = {
       "vs-dark": {
         background: "#1a1a1a",
@@ -216,6 +207,14 @@ export default function IDE3({data}) {
     if (newColours[theme]) {
       setThemeColours(newColours[theme]);
     }
+    setSelectedTheme(theme);
+    if (monacoRef.current) {
+      window.monaco.editor.setTheme(theme);
+    }
+    if (isTerminalReady) {
+      updateTheme();
+    }
+
   };
 
   useEffect(() => {
@@ -305,7 +304,6 @@ export default function IDE3({data}) {
   };
 
   const SubmitToDatabase = async () => {
-    // Debug: Ensure assignmentId is not undefined
     console.log("Submitting to database with assignmentId:", assignmentId);
     const res = await fetch("/api/SubmitCode", {
       method: "POST",
@@ -534,24 +532,19 @@ export default function IDE3({data}) {
                   <div
                     ref={termRef}
                     className="w-1/2 h-64 rounded-xl border border-gray-700/50 shadow-2xl overflow-hidden"
-                    style={{ backgroundColor: "#1a1a1a" }}
                   />
+
                   <textarea
-                  value={stdin}
-                  onChange={(e) => setStdin(e.target.value)}
-                  placeholder="Enter input here (make a newline for each input)"
-                  className="w-1/2 h-64 rounded-xl border border-gray-700/50 shadow-2xl resize-none p-2"
-                  style={{
-                    backgroundColor: "#1a1a1a",
-                    color: "#FFFFFF",
-                    fontFamily: '"Fira Mono", "Monaco", "Consolas", monospace',
-                    fontSize: "13px",
-                    lineHeight: "1.2",
-                    caretColor: "#00ff00",
-                    outline: "none",
-                    userSelect: "text",
-                  }}
-                />
+                    value={stdin}
+                    onChange={(e) => setStdin(e.target.value)}
+                    placeholder="Enter input here (make a newline for each input)"
+                    className="w-1/2 h-64 rounded-xl border border-gray-700/50 shadow-2xl resize-none p-2"
+                    style={{
+                      ...themeColours,
+                      fontFamily: '"Fira Mono", "Monaco", "Consolas", monospace',
+                      fontSize: "13px",
+                    }}
+                  />
                 </div>
               </div>
             </div>
