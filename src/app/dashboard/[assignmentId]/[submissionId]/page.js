@@ -8,9 +8,7 @@ import crypto from "node:crypto";
 export default async function Main({ params }) {
     const { userId } = await auth();
 
-    const assignmentId = params.assignmentId;
-const submissionId = params.submissionId;
-
+const { assignmentId, submissionId } = await params;
 const response = await clerkClient();
 const user = await response.users.getUser(userId);
     const email = user?.emailAddresses?.[0]?.emailAddress;
@@ -43,7 +41,8 @@ const user = await response.users.getUser(userId);
    WHERE s.assignment_id = $1 AND s.id = $2 AND a.hash_userid_email = $3`,
   [assignmentId, submissionId, hash]
 );
-        console.log(result);
+
+        console.log(result.rows[0]);
          if (result.rowCount === 0) {
           return <div>Thanks for trying but ur access is denied</div>
         } else {

@@ -208,7 +208,7 @@ const [isSubmittingGrade, setIsSubmittingGrade] = useState(false);
     const res = await fetch("/api/RunCode", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ source_code: code, language_id: selectedLanguage }),
+      body: JSON.stringify({ source_code: code, language_id: selectedLanguage, stdin: Buffer.from(stdin.trim(), "utf-8").toString()}),
     });
 
     const data = await res.json();
@@ -232,16 +232,18 @@ const [isSubmittingGrade, setIsSubmittingGrade] = useState(false);
 
       const res = await submitToJudge0(value);
 
-      if (res.stdout) {
-        xtermRef.current.write("\x1b[32m✓ Output:\x1b[0m\r\n");
-        writeToTerminal(res.stdout);
-      } else if (res.stderr) {
-        xtermRef.current.write("\x1b[31m✗ Error:\x1b[0m\r\n");
-        writeToTerminal(res.stderr);
-      } else {
-        xtermRef.current.write("\x1b[90mNo output returned from Judge0.\x1b[0m\r\n");
-      }
-
+      if (res.compile_output) {
+  xtermRef.current.write("\x1b[31m✗ Compile Error:\x1b[0m\r\n");
+  writeToTerminal(res.compile_output);
+} else if (res.stdout) {
+  xtermRef.current.write("\x1b[32m✓ Output:\x1b[0m\r\n");
+  writeToTerminal(res.stdout);
+} else if (res.stderr) {
+  xtermRef.current.write("\x1b[31m✗ Runtime Error:\x1b[0m\r\n");
+  writeToTerminal(res.stderr);
+} else {
+  xtermRef.current.write("\x1b[90mNo output returned from Judge0.\x1b[0m\r\n");
+}
       xtermRef.current.write("\r\n" + "─".repeat(50) + "\r\n");
       setIsSubmitting(false);
     }
@@ -343,7 +345,7 @@ const [isSubmittingGrade, setIsSubmittingGrade] = useState(false);
 
     {/* Score Section */}
     <div className="flex items-center">
-      {data.score && data.total_score ? (
+      {data.score != null && data.total_score != null ? (
         <div className="text-right">
           <p className="text-sm text-white font-medium">Score</p>
           <div className="flex items-center space-x-2">

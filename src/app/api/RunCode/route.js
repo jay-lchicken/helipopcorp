@@ -10,14 +10,15 @@ export async function POST(req) {
     body: JSON.stringify({
       source_code: Buffer.from(source_code).toString("base64"),
       language_id: language_id || 63,
-      stdin: Buffer.from(stdin).toString("base64"),
-    }),
+stdin: stdin ? Buffer.from(stdin).toString("base64") : "",    }),
   });
+  console.log(stdin)
 
   const data = await response.json();
 
   if (data.stdout) data.stdout = Buffer.from(data.stdout, "base64").toString();
   if (data.stderr) data.stderr = Buffer.from(data.stderr, "base64").toString();
+  if (data.compile_output) data.compile_output = Buffer.from(data.compile_output, "base64").toString();
 
   return NextResponse.json(data);
 }
