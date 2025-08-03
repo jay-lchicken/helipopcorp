@@ -5,16 +5,16 @@ import * as crypto from "node:crypto";
 
 export async function POST(req) {
     const { userId, sessionClaims } = getAuth(req);
+    const email = sessionClaims?.email;
     const body = await req.json();
     const { assignment_id, code, language_id } = body;
     if (!userId) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    if (!userId || !sessionClaims?.email) {
+    if (!userId || !email) {
       return NextResponse.json({ error: 'Unauthorized: no email' }, { status: 401 });
     }
     console.log("sessionClaims:", sessionClaims);
-    const email = sessionClaims?.email;
     const hash = crypto.createHash('sha256').update(email+userId).digest('hex');
   try {
     const assignment = await pool.query(

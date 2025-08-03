@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import pool from "@/lib/db";
 import crypto from "node:crypto";
-import IDE3 from "@/app/student-dashboard/[submissionId]/IDE";
+import IDE3 from "./IDE";
 export default async function Main({ params }) {
     const { userId, sessionClaims } = await auth();
 

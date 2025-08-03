@@ -4,7 +4,8 @@ import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import Script from "next/script";
 import { SignedIn, SignedOut, useUser, SignInButton, SignUpButton } from "@clerk/nextjs";
-import "xterm/css/xterm.css";
+import { Terminal } from '@xterm/xterm';
+import '@xterm/xterm/css/xterm.css';
 import { getAllJSDocTagsOfKind } from "typescript";
 
 // Judge0 Language mappings
@@ -74,6 +75,14 @@ export default function IDE3({data}) {
   const termRef = useRef(null);
   const xtermRef = useRef(null);
   const [stdin, setStdin] = useState("");
+  const [themeColours, setThemeColours] = useState({
+    background: "#1a1a1a",
+    foreground: "#e0e0e0",
+    cursor: "#00ff00",
+    cursorAccent: "#00ff00",
+    selection: "rgba(255, 0.3)",
+  });
+  const themeColoursRef = useRef(themeColours);
   const [isEditorLoaded, setIsEditorLoaded] = useState(false);
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
   const [isTerminalReady, setIsTerminalReady] = useState(false);
@@ -81,10 +90,6 @@ export default function IDE3({data}) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState(63); // Default to JavaScript
   const [selectedTheme, setSelectedTheme] = useState("vs-dark");
-  const [showGradingForm, setShowGradingForm] = useState(false);
-const [grade, setGrade] = useState('');
-const [feedback, setFeedback] = useState('');
-const [isSubmittingGrade, setIsSubmittingGrade] = useState(false);
 
   useEffect(() => {
   if (data && editorRef.current && monacoRef.current && isEditorLoaded) {
@@ -173,22 +178,53 @@ const [isSubmittingGrade, setIsSubmittingGrade] = useState(false);
     if (monacoRef.current) {
       window.monaco.editor.setTheme(theme);
     }
+    if (isTerminalReady) {
+      updateTheme();
+    }
+
+    const newColours = {
+      "vs-dark": {
+        background: "#1a1a1a",
+        foreground: "#e0e0e0",
+        cursor: "#00ff00",
+        cursorAccent: "#00ff00",
+        selection: "rgba(255, 255, 255, 0.3)",
+      },
+      "vs": {
+        background: "#ffffff",
+        foreground: "#000000",
+        cursor: "#000000",
+        cursorAccent: "#000000",
+        selection: "rgba(0, 0, 0, 0.3)",
+      },
+      "hc-black": {
+        background: "#000000",
+        foreground: "#ffffff",
+        cursor: "#ffffff",
+        cursorAccent: "#ffffff",
+        selection: "rgba(255, 255, 255, 0.3)",
+      },
+      "hc-light": {
+        background: "#ffffff",
+        foreground: "#000000",
+        cursor: "#000000",
+        cursorAccent: "#000000",
+        selection: "rgba(0, 0, 0, 0.3)",
+      },
+    };
+
+    if (newColours[theme]) {
+      setThemeColours(newColours[theme]);
+    }
   };
 
   useEffect(() => {
     async function setupTerminal() {
       if (typeof window !== "undefined" && termRef.current && !xtermRef.current) {
-        const { Terminal } = await import("xterm");
         xtermRef.current = new Terminal({
           cols: 100,
           rows: 15,
-          theme: {
-            background: "#1a1a1a",
-            foreground: "#e0e0e0",
-            cursor: "#00ff00",
-            cursorAccent: "#00ff00",
-            selection: "rgba(255, 255, 255, 0.3)",
-          },
+          theme: themeColours,
           disableStdin: true,
           fontFamily: '"Fira Mono", "Monaco", "Consolas", monospace',
           fontSize: 13,
@@ -203,6 +239,15 @@ const [isSubmittingGrade, setIsSubmittingGrade] = useState(false);
     }
     setupTerminal();
   }, [termRef, isEditorLoaded]);
+
+  const updateTheme = () => {
+    if (xtermRef.current) {
+      xtermRef.current.options.theme = themeColours;
+      xtermRef.current.refresh(0, xtermRef.current.rows - 1);
+    } else {
+      console.warn("xtermRef not ready yet");
+    }
+  };
 
   async function submitToJudge0(code) {
     const res = await fetch("/api/RunCode", {
@@ -328,15 +373,58 @@ const [isSubmittingGrade, setIsSubmittingGrade] = useState(false);
               </div>
             </div>
           )}
+
           <div className="flex flex-col h-screen">
-          <header className="flex items-center justify-between px-6 py-4 border-b border-gray-700/50 bg-gray-900/50 backdrop-blur-sm">
-            <div className="rounded-lg shadow-sm p-6">
-              <p>placeholder</p>
-            </div>
+            <header className="flex items-center justify-between px-6 py-4 border-b border-gray-700/50 bg-gray-900/50 backdrop-blur-sm">
+              <div className=" rounded-lg shadow-sm border border-gray-200 p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  {/* Student Info Section */}
+                  <div className="flex items-center space-x-3">
+                    <div className="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full">
+                      <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-sm  font-medium text-white">Student Email</p>
+                      <p className="text-lg font-semibold text-white">{data.user_id}</p>
+                    </div>
+                  </div>
 
-
-
-        </header>
+                  {/* Score Section */}
+                  <div className="flex items-center">
+                    {data.score != null && data.total_score != null ? (
+                      <div className="text-right">
+                        <p className="text-sm text-white font-medium">Score</p>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-2xl font-bold text-white">
+                            {data.score}/{data.total_score}
+                          </span>
+                          <div className="flex items-center">
+                            <div className="w-16 bg-gray-200 rounded-full h-2">
+                              <div
+                                className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-300"
+                                style={{ width: `${(data.score / data.total_score) * 100}%` }}
+                              ></div>
+                            </div>
+                            <span className="ml-2 text-sm text-white">
+                              {Math.round((data.score / data.total_score) * 100)}%
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center space-x-2 px-4 py-2 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span className="text-yellow-800 font-medium">Pending Grading</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </header>
 
 
             <header className="flex items-center justify-between px-6 py-4 border-b border-gray-700/50 bg-gray-900/50 backdrop-blur-sm">
@@ -449,11 +537,21 @@ const [isSubmittingGrade, setIsSubmittingGrade] = useState(false);
                     style={{ backgroundColor: "#1a1a1a" }}
                   />
                   <textarea
-                    value={stdin}
-                    onChange={(e) => setStdin(e.target.value)}
-                    placeholder="Enter input here (make a newline for each input)"
-                    className="w-1/2 h-64 rounded-xl border border-gray-700/50 bg-[#1e1e1e] text-white p-2 resize-none shadow-2xl"
-                  />
+                  value={stdin}
+                  onChange={(e) => setStdin(e.target.value)}
+                  placeholder="Enter input here (make a newline for each input)"
+                  className="w-1/2 h-64 rounded-xl border border-gray-700/50 shadow-2xl resize-none p-2"
+                  style={{
+                    backgroundColor: "#1a1a1a",
+                    color: "#FFFFFF",
+                    fontFamily: '"Fira Mono", "Monaco", "Consolas", monospace',
+                    fontSize: "13px",
+                    lineHeight: "1.2",
+                    caretColor: "#00ff00",
+                    outline: "none",
+                    userSelect: "text",
+                  }}
+                />
                 </div>
               </div>
             </div>
