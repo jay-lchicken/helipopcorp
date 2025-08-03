@@ -43,6 +43,7 @@ function SubmissionsList({ assignmentID, assignmentName }) {
           key={index}
           className="p-5 bg-slate-800/40 backdrop-filter backdrop-blur-md rounded-xl shadow-md hover:shadow-lg transition-shadow cursor-pointer"
           onClick={() => {
+            // Navigate to assignmentName/submissionId
             window.location.href = `./${assignmentID}/${sub.id}`;
           }}
         >
@@ -86,17 +87,16 @@ export default function IDE() {
   // Decode assignment from params safely
   const assignmentName = assignmentId ? decodeURIComponent(assignmentId) : null;
 
-  const getSubmissionsFromDatabase = async (assignmentId) => {
+  const getAssignmentFromDatabase = async (assignmentId) => {
     try {
-      const res = await fetch("/api/GetSubmissions");
-      if (!res.ok) throw new Error("Failed to fetch submissions");
+      const res = await fetch("/api/GetAssignments");
+      if (!res.ok) throw new Error("Failed to fetch assignments");
       const data = await res.json();
-      console.log("Submissions API response:", data);
+      console.log("Assignments API response:", data);
       const matched = data.find((a) => a.id?.toString() === assignmentId?.toString());
-      console.log("Matched submission:", matched);
       return matched || null;
     } catch (err) {
-      console.error("Error fetching submissions:", err);
+      console.error("Error fetching assignments:", err);
       return null;
     }
   };
@@ -106,7 +106,7 @@ export default function IDE() {
     if (!assignmentId) return;
 
     setLoading(true);
-    getSubmissionsFromDatabase(assignmentId)
+    getAssignmentFromDatabase(assignmentId)
       .then((data) => {
         setAssignmentData(data);
       })
