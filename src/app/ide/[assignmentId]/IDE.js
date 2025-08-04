@@ -78,6 +78,7 @@ export default function IDE() {
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
   const [isTerminalReady, setIsTerminalReady] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSending, setIsSending] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState(63); // Default to JavaScript
   const [selectedTheme, setSelectedTheme] = useState("vs-dark");
@@ -196,7 +197,7 @@ export default function IDE() {
   };
 
   const handleSubmit = async () => {
-    setIsSubmitting(true);
+    setIsSending(true);
     if (!isTerminalReady) return;
     if (monacoRef.current) {
       const value = monacoRef.current.getValue();
@@ -208,20 +209,20 @@ export default function IDE() {
       const res = await submitToJudge0(value);
 
       if (res.compile_output) {
-  xtermRef.current.write("\x1b[31m✗ Compile Error:\x1b[0m\r\n");
-  writeToTerminal(res.compile_output);
-} else if (res.stdout) {
-  xtermRef.current.write("\x1b[32m✓ Output:\x1b[0m\r\n");
-  writeToTerminal(res.stdout);
-} else if (res.stderr) {
-  xtermRef.current.write("\x1b[31m✗ Runtime Error:\x1b[0m\r\n");
-  writeToTerminal(res.stderr);
-} else {
-  xtermRef.current.write("\x1b[90mNo output returned from Judge0.\x1b[0m\r\n");
-}
+      xtermRef.current.write("\x1b[31m✗ Compile Error:\x1b[0m\r\n");
+      writeToTerminal(res.compile_output);
+    } else if (res.stdout) {
+      xtermRef.current.write("\x1b[32m✓ Output:\x1b[0m\r\n");
+      writeToTerminal(res.stdout);
+    } else if (res.stderr) {
+      xtermRef.current.write("\x1b[31m✗ Runtime Error:\x1b[0m\r\n");
+      writeToTerminal(res.stderr);
+    } else {
+      xtermRef.current.write("\x1b[90mNo output returned from Judge0.\x1b[0m\r\n");
+    }
 
       xtermRef.current.write("\r\n" + "─".repeat(50) + "\r\n");
-      setIsSubmitting(false);
+      setIsSending(false);
     }
   };
 
@@ -325,7 +326,7 @@ export default function IDE() {
                     </option>
                   ))}
                 </select>
-
+{/* 
                 <select
                   value={selectedTheme}
                   onChange={(e) => handleThemeChange(e.target.value)}
@@ -337,7 +338,7 @@ export default function IDE() {
                     </option>
                   ))}
                 </select>
-
+ */}
                 <button
                   onClick={handleClearTerminal}
                   disabled={!isTerminalReady}
@@ -347,13 +348,13 @@ export default function IDE() {
                 </button>
 
                 <button
-                  disabled={!isTerminalReady || isSubmitting}
+                  disabled={!isTerminalReady || isSending}
                   className={`px-6 py-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none ${
-                    isSubmitting ? 'animate-pulse' : ''
+                    isSending ? 'animate-pulse' : ''
                   }`}
                   onClick={handleSubmit}
                 >
-                  {isSubmitting ? (
+                  {isSending ? (
                     <div className="flex items-center space-x-2">
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                       <span>Running...</span>
@@ -366,18 +367,32 @@ export default function IDE() {
                   )}
                 </button>
 
-                {assignmentId !== "IDE"  ?(<button
-                  className="px-6 py-2 bg-gradient-to-r disabled:opacity-50 from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                  onClick={async () => {
-                    await SubmitToDatabase();
-                    window.location.href = `./${assignmentId}/submitted`;
-                  }}
-                  disabled={isSubmitting}
-                >
-                  <div className="flex items-center space-x-2">
-                    <span>Submit Code</span>
-                  </div>
-                </button>):(<div></div>)}
+                {assignmentId !== "IDE" ? (
+                  <button
+                    className={`px-6 py-2 bg-gradient-to-r from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 ${
+                      isSubmitting ? 'animate-pulse' : ''
+                    }`}
+                    onClick={async () => {
+                      setIsSubmitting(true);
+                      await SubmitToDatabase();
+                      window.location.href = `./${assignmentId}/submitted`;
+                    }}
+                  >
+                    {isSubmitting ? (
+                      <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>Submitting...</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center space-x-2">
+                        <span>📤</span>
+                        <span>Submit Code</span>
+                      </div>
+                    )}
+                  </button>
+                ) : (
+                  <div></div>
+                )}
               </div>
             </header>
 

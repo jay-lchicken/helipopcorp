@@ -403,7 +403,7 @@ const [isSubmittingGrade, setIsSubmittingGrade] = useState(false);
                     </option>
                   ))}
                 </select>
-
+{/* 
                 <select
                   value={selectedTheme}
                   onChange={(e) => handleThemeChange(e.target.value)}
@@ -414,7 +414,7 @@ const [isSubmittingGrade, setIsSubmittingGrade] = useState(false);
                       {theme.label}
                     </option>
                   ))}
-                </select>
+                </select> */}
                 <button
   onClick={() => setShowGradingForm(true)}
   className="px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-medium rounded-lg transition-colors duration-200 text-sm shadow-lg hover:shadow-xl"

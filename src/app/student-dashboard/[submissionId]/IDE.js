@@ -446,7 +446,7 @@ export default function IDE3({data}) {
                     </option>
                   ))}
                 </select>
-
+{/* 
                 <select
                   value={selectedTheme}
                   onChange={(e) => handleThemeChange(e.target.value)}
@@ -458,7 +458,7 @@ export default function IDE3({data}) {
                     </option>
                   ))}
                 </select>
-
+ */}
 
                 <button
                   onClick={handleClearTerminal}
