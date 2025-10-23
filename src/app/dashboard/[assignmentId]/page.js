@@ -10,6 +10,7 @@ export default async function Main() {
 
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/usersync`, {
             headers: {
+
                 Cookie: cookieStore?.getAll?.().map(c => `${c.name}=${c.value}`).join('; ') || ''
             },
             credentials: 'include'
@@ -22,7 +23,7 @@ export default async function Main() {
     }
 
     return (
-        <Assignment DBUser={user}/>
+            <Assignment DBUser={user}/>
 
     );
 }

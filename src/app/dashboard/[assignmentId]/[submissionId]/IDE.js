@@ -67,6 +67,7 @@ const MONACO_THEMES = [
 ];
 
 export default function IDE2({data}) {
+  const clerk = useClerk();
   const { assignmentId } = useParams();
   const { isSignedIn } = useUser();
   const editorRef = useRef(null);
@@ -126,7 +127,7 @@ const [isSubmittingGrade, setIsSubmittingGrade] = useState(false);
 
   // Initialize Monaco editor
   useEffect(() => {
-    if (!isSignedIn || isEditorLoaded || !editorRef.current || !isScriptLoaded) return;
+    if (!isSignedIn || isEditorLoaded || !editorRef.current || !isScriptLoaded || !clerk.loaded) return;
 
     window.require.config({
       paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor/min/vs" },
@@ -156,7 +157,7 @@ const [isSubmittingGrade, setIsSubmittingGrade] = useState(false);
   if (isTerminalReady) setIsLoading(false);
 });
 
-  }, [isSignedIn, isEditorLoaded, isScriptLoaded, isTerminalReady, selectedLanguage, selectedTheme]);
+  }, [isSignedIn, isEditorLoaded, isScriptLoaded, isTerminalReady, selectedLanguage, selectedTheme, clerk.loaded]);
 
   const handleLanguageChange = (langId) => {
     setSelectedLanguage(parseInt(langId));
