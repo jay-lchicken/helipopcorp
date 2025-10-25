@@ -3,6 +3,7 @@
 import {useEffect, useState, useCallback} from 'react';
 import {SignedIn, SignedOut, SignInButton, SignUpButton, useUser} from '@clerk/nextjs';
 import React from 'react';
+import {useRouter} from "next/navigation";
 
 const AssignmentList = React.memo(({ assignments, onEdit, onDelete }) => (
   <div className="space-y-4">
@@ -75,6 +76,7 @@ export default function TeacherDashboardPage({serverAssignments}) {
     const [showAddForm, setShowAddForm] = useState(false);
     const [editingAssignment, setEditingAssignment] = useState(null); // State to hold the assignment being edited
     const [newTitle, setNewTitle] = useState('');
+    const router = useRouter();
     
     const [level, setLevel] = useState('');
     const [subject, setSubject] = useState('');
@@ -184,6 +186,17 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                         {assignments.length} total
                                     </span>
                                 </div>
+                                <div className={"flex flex-row space-x-4"}>
+                                    <button
+                                    onClick={() => router.push('/ide')}
+                                    className="group flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 font-semibold relative overflow-hidden"
+                                >
+                                    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                        </svg>
+                                    <span className="relative">Go to IDE</span>
+                                </button>
                                 <button
                                     onClick={() => setShowAddForm(true)}
                                     className="group flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 font-semibold relative overflow-hidden"
@@ -194,6 +207,7 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                     </svg>
                                     <span className="relative">Add Assignment</span>
                                 </button>
+                                </div>
                             </div>
 
                             {assignments.length === 0 ? (

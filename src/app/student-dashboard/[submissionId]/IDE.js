@@ -7,6 +7,7 @@ import { SignedIn, SignedOut, useUser, SignInButton, SignUpButton } from "@clerk
 import { Terminal } from '@xterm/xterm';
 import '@xterm/xterm/css/xterm.css';
 import { getAllJSDocTagsOfKind } from "typescript";
+import {useClerk} from "@clerk/nextjs";
 
 // Judge0 Language mappings
 const JUDGE0_LANGUAGES = {
@@ -70,6 +71,8 @@ const MONACO_THEMES = [
 export default function IDE3({data}) {
   const { assignmentId } = useParams();
   const { isSignedIn } = useUser();
+      const clerk = useClerk();
+
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
   const termRef = useRef(null);
@@ -130,7 +133,7 @@ export default function IDE3({data}) {
 
   // Initialize Monaco editor
   useEffect(() => {
-    if (!isSignedIn || isEditorLoaded || !editorRef.current || !isScriptLoaded) return;
+    if (!isSignedIn || isEditorLoaded || !editorRef.current || !isScriptLoaded || !clerk.loaded) return;
 
     window.require.config({
       paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor/min/vs" },
@@ -160,7 +163,7 @@ export default function IDE3({data}) {
   if (isTerminalReady) setIsLoading(false);
 });
 
-  }, [isSignedIn, isEditorLoaded, isScriptLoaded, isTerminalReady, selectedLanguage, selectedTheme]);
+  }, [isSignedIn, isEditorLoaded, isScriptLoaded, isTerminalReady, selectedLanguage, selectedTheme, clerk.loaded]);
 
   const handleLanguageChange = (langId) => {
     setSelectedLanguage(parseInt(langId));
