@@ -24,8 +24,7 @@ export async function GET(request) {
 
   if (!dbUser) {
     const teacherDomain = "@s2024.ssts.edu.sg";
-    const role = email.endsWith(teacherDomain) ? "teacher" : "student";
-
+const role = (email?.toLowerCase().endsWith(teacherDomain) || email?.toLowerCase().endsWith("kidslearncode.org")) ? "teacher" : "student";
     const insertResult = await pool.query(
       `INSERT INTO users (clerkId, email, role)
        VALUES ($1, $2, $3)

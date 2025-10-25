@@ -6,7 +6,7 @@ import Script from "next/script";
 import { SignedIn, SignedOut, useUser, SignInButton, SignUpButton } from "@clerk/nextjs";
 import "xterm/css/xterm.css";
 import { getAllJSDocTagsOfKind } from "typescript";
-
+import {useClerk} from "@clerk/nextjs";
 // Judge0 Language mappings
 const JUDGE0_LANGUAGES = {
   45: { name: "Assembly (NASM 2.14.02)", monaco: "asm", ext: "asm" },

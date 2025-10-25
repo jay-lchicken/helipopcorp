@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import Script from "next/script";
-import { SignedIn, SignedOut, useUser, SignInButton, SignUpButton } from "@clerk/nextjs";
+import {SignedIn, SignedOut, useUser, SignInButton, SignUpButton, useClerk} from "@clerk/nextjs";
 import "xterm/css/xterm.css";
 import { getAllJSDocTagsOfKind } from "typescript";
 
@@ -82,6 +82,8 @@ export default function IDE() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState(63); // Default to JavaScript
   const [selectedTheme, setSelectedTheme] = useState("vs-dark");
+    const clerk = useClerk();
+
 
 
   // Get default code for language
@@ -107,7 +109,7 @@ export default function IDE() {
 
   // Initialize Monaco editor
   useEffect(() => {
-    if (!isSignedIn || isEditorLoaded || !editorRef.current || !isScriptLoaded) return;
+    if (!isSignedIn || isEditorLoaded || !editorRef.current || !isScriptLoaded || !clerk.loaded) return;
 
     window.require.config({
       paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor/min/vs" },
@@ -132,7 +134,7 @@ export default function IDE() {
       setIsEditorLoaded(true);
       if (isTerminalReady) setIsLoading(false);
     });
-  }, [isSignedIn, isEditorLoaded, isScriptLoaded, isTerminalReady, selectedLanguage, selectedTheme]);
+  }, [isSignedIn, isEditorLoaded, isScriptLoaded, isTerminalReady, selectedLanguage, selectedTheme, clerk.loaded]);
 
   const handleLanguageChange = (langId) => {
     setSelectedLanguage(parseInt(langId));
