@@ -64,27 +64,10 @@ Follow these instructions to set up and run the project on your local machine.
     ```
 
 3.  **Set up the database:**
-    Connect to your PostgreSQL instance and run the following SQL commands to create the necessary tables:
+    Connect to your PostgreSQL instance and run the idempotent init script. It is safe to run on every deployment — tables are only created if they do not already exist:
 
-    ```sql
-    -- Create the "users" table
-    CREATE TABLE users (
-        id SERIAL PRIMARY KEY,
-        clerkId VARCHAR(255) UNIQUE NOT NULL,
-        email VARCHAR(255) UNIQUE NOT NULL,
-        role VARCHAR(50) NOT NULL,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    );
-
-    -- Create the "assignments" table
-    CREATE TABLE assignments (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        level VARCHAR(100),
-        subject VARCHAR(100),
-        hash_userid_email VARCHAR(255) NOT NULL,
-        date_created TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    );
+    ```bash
+    psql "$DATABASE_URL" -f init.sql
     ```
 
 4.  **Configure Environment Variables:**
