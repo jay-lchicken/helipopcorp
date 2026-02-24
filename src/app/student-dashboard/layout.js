@@ -1,5 +1,7 @@
 import { ClerkProvider, SignedIn, SignOutButton } from "@clerk/nextjs";
 import "../globals.css";
+import { Button } from "@/components/ui/button";
+import { LogOut } from "lucide-react";
 
 export const metadata = {
   title: "KLC IDE",
@@ -23,11 +25,10 @@ export default function RootLayout({ children }) {
             <SignedIn>
                 <div className="absolute top-4 right-4 z-50">
                 <SignOutButton redirectUrl="/student-dashboard">
-                    <button
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 font-semibold"
-                    >
-                    Sign Out
-                    </button>
+                    <Button variant="default" size="sm">
+                      <LogOut className="w-4 h-4" />
+                      Sign Out
+                    </Button>
                 </SignOutButton>
                 </div>
             </SignedIn>

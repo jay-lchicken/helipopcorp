@@ -4,68 +4,62 @@ import {useEffect, useState, useCallback} from 'react';
 import {SignedIn, SignedOut, SignInButton, SignUpButton, useUser} from '@clerk/nextjs';
 import React from 'react';
 import {useRouter} from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import { Plus, Pencil, Trash2, FileText, LogIn, UserPlus, Terminal } from "lucide-react";
 
 const AssignmentList = React.memo(({ assignments, onEdit, onDelete }) => (
-  <div className="space-y-4">
+  <div className="space-y-3">
     {assignments.map((assignment) => (
-      <div
+      <Card
         key={assignment.id}
         onClick={() => {
           window.location.href = `/dashboard/${assignment.id}`;
         }}
-        className="group bg-slate-700/30 border border-slate-600/30 rounded-xl p-6 hover:bg-slate-700/40 hover:border-slate-600/50 transition-all duration-300"
+        className="group cursor-pointer bg-secondary/30 border-border/30 hover:bg-secondary/50 hover:border-border/60 transition-all duration-300"
       >
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-blue-400 transition-colors duration-300">
-              {assignment.name}
-            </h3>
-            <div className="flex items-center gap-4 text-sm">
-              <span className="text-slate-400">•</span>
-              <span className="text-slate-400">{new Date(assignment.date_created).toLocaleString()}</span>
+        <CardContent className="p-5">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors duration-300">
+                {assignment.name}
+              </h3>
+              <div className="flex items-center gap-4 text-sm">
+                <span className="text-muted-foreground">•</span>
+                <span className="text-muted-foreground">{new Date(assignment.date_created).toLocaleString()}</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(assignment);
+                }}
+              >
+                <Pencil className="w-4 h-4 text-muted-foreground" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(assignment);
+                }}
+              >
+                <Trash2 className="w-4 h-4 text-muted-foreground" />
+              </Button>
             </div>
           </div>
-          <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit(assignment);
-              }}
-              className="p-2 hover:bg-slate-600/50 rounded-lg transition-colors duration-200"
-            >
-              <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                />
-              </svg>
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(assignment);
-              }}
-              className="p-2 hover:bg-slate-600/50 rounded-lg transition-colors duration-200"
-            >
-              <svg
-                className="w-4 h-4 text-slate-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     ))}
   </div>
 ));
@@ -91,35 +85,35 @@ export default function TeacherDashboardPage({serverAssignments}) {
     }, []);
 
     return (
-        <div className="min-h-screen text-white px-6 py-8">
+        <div className="min-h-screen text-foreground px-6 py-8">
             <SignedOut>
                 <div className="flex flex-col items-center justify-center min-h-screen text-center">
                     <div className="relative group mb-8">
-                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-blue-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 transform scale-110"></div>
-                        <div className="relative bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-2xl">
-                            <img className="w-[280px] h-auto drop-shadow-2xl" src="/klc.png" alt="KLC Logo"/>
-                        </div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 transform scale-110"></div>
+                        <Card className="border-border/50 bg-card/30 backdrop-blur-sm shadow-2xl">
+                            <CardContent className="p-8">
+                                <img className="w-[280px] h-auto drop-shadow-2xl" src="/klc.png" alt="KLC Logo"/>
+                            </CardContent>
+                        </Card>
                     </div>
 
-                    <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent mb-4">
+                    <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent mb-4">
                         Welcome to the KLC Code IDE
                     </h1>
-                    <p className="text-slate-300 text-lg mb-8">Please sign in to access your teacher dashboard</p>
+                    <p className="text-muted-foreground text-lg mb-8">Please sign in to access your teacher dashboard</p>
 
                     <div className="flex gap-6">
-                        <SignInButton
-                            mode="modal"
-                            className="group px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl shadow-lg hover:from-blue-700 hover:to-blue-800 hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 font-semibold relative overflow-hidden"
-                        >
-                            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            <span className="relative">Sign In</span>
+                        <SignInButton mode="modal">
+                            <Button size="lg" className="px-8 py-3">
+                                <LogIn className="w-5 h-5" />
+                                Sign In
+                            </Button>
                         </SignInButton>
-                        <SignUpButton
-                            mode="modal"
-                            className="group px-8 py-3 bg-slate-700/50 text-white rounded-xl shadow-lg hover:bg-slate-600/50 hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 font-semibold border border-slate-600/50 relative overflow-hidden"
-                        >
-                            <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            <span className="relative">Sign Up</span>
+                        <SignUpButton mode="modal">
+                            <Button variant="secondary" size="lg" className="px-8 py-3 border border-border/50">
+                                <UserPlus className="w-5 h-5" />
+                                Sign Up
+                            </Button>
                         </SignUpButton>
                     </div>
                 </div>
@@ -129,327 +123,301 @@ export default function TeacherDashboardPage({serverAssignments}) {
                 {!user ? (
                     <div className="flex items-center justify-center min-h-screen">
                         <div className="text-center">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-                            <p className="text-slate-300 text-lg">Loading your dashboard...</p>
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                            <p className="text-muted-foreground text-lg">Loading your dashboard...</p>
                         </div>
                     </div>
                 ) : (
                     <div className={`max-w-6xl mx-auto transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-                        <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-2xl mb-8">
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                                <div className="flex items-center gap-4">
-                                    <div className="relative">
-                                        <img
-                                            src={user.imageUrl}
-                                            alt={user.name}
-                                            className="w-16 h-16 rounded-full border-2 border-blue-500/30 shadow-lg"
-                                        />
-                                        <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-slate-800"></div>
+                        <Card className="bg-card/40 backdrop-blur-sm border-border/50 shadow-2xl mb-8">
+                            <CardContent className="p-8">
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                    <div className="flex items-center gap-4">
+                                        <div className="relative">
+                                            <Avatar className="w-16 h-16 border-2 border-primary/30 shadow-lg">
+                                                <AvatarImage src={user.imageUrl} alt={user.name} />
+                                                <AvatarFallback>{user?.fullName?.charAt(0) || 'T'}</AvatarFallback>
+                                            </Avatar>
+                                            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-card"></div>
+                                        </div>
+                                        <div>
+                                            <h1 className="text-3xl font-bold text-foreground mb-1">
+                                                Welcome back, {user?.fullName || 'Teacher'} 👋
+                                            </h1>
+                                            <p className="text-muted-foreground">Ready to manage your assignments</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h1 className="text-3xl font-bold text-white mb-1">
-                                            Welcome back, {user?.fullName || 'Teacher'} 👋
-                                        </h1>
-                                        <p className="text-slate-400">Ready to manage your assignments</p>
-                                    </div>
-                                </div>
 
-                                <div className="flex items-center gap-2 text-sm text-slate-400">
-                                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                    <span>Online</span>
+                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                        <span>Online</span>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
+                            </CardContent>
+                        </Card>
 
                         <div className="grid grid-cols-1 gap-6 mb-8">
-                            <div className="bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6 hover:bg-slate-800/40 transition-all duration-300">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-slate-400 text-sm">Total Assignments</p>
-                                        <p className="text-2xl font-bold text-white">{assignments.length}</p>
+                            <Card className="bg-card/30 backdrop-blur-sm border-border/50 hover:bg-card/40 transition-all duration-300">
+                                <CardContent className="p-6">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="text-muted-foreground text-sm">Total Assignments</p>
+                                            <p className="text-2xl font-bold text-foreground">{assignments.length}</p>
+                                        </div>
+                                        <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center">
+                                            <FileText className="w-6 h-6 text-primary" />
+                                        </div>
                                     </div>
-                                    <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                                        <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                        </svg>
-                                    </div>
-                                </div>
-                            </div>
-
+                                </CardContent>
+                            </Card>
                         </div>
 
-                        <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 shadow-2xl">
-                            <div className="flex items-center justify-between mb-6">
-                                <div className="flex items-center gap-3">
-                                    <h2 className="text-2xl font-bold text-white">Assignments</h2>
-                                    <span className="px-3 py-1 bg-blue-500/20 text-blue-400 text-sm font-medium rounded-full border border-blue-500/30">
-                                        {assignments.length} total
-                                    </span>
+                        <Card className="bg-card/40 backdrop-blur-sm border-border/50 shadow-2xl">
+                            <CardHeader>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <CardTitle>Assignments</CardTitle>
+                                        <Badge variant="secondary">
+                                            {assignments.length} total
+                                        </Badge>
+                                    </div>
+                                    <div className="flex flex-row space-x-3">
+                                        <Button onClick={() => router.push('/ide')}>
+                                            <Terminal className="w-4 h-4" />
+                                            Go to IDE
+                                        </Button>
+                                        <Button onClick={() => setShowAddForm(true)}>
+                                            <Plus className="w-4 h-4" />
+                                            Add Assignment
+                                        </Button>
+                                    </div>
                                 </div>
-                                <div className={"flex flex-row space-x-4"}>
-                                    <button
-                                    onClick={() => router.push('/ide')}
-                                    className="group flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 font-semibold relative overflow-hidden"
-                                >
-                                    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                        </svg>
-                                    <span className="relative">Go to IDE</span>
-                                </button>
-                                <button
-                                    onClick={() => setShowAddForm(true)}
-                                    className="group flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 font-semibold relative overflow-hidden"
-                                >
-                                    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                    <svg className="w-5 h-5 relative" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                    </svg>
-                                    <span className="relative">Add Assignment</span>
-                                </button>
-                                </div>
-                            </div>
+                            </CardHeader>
+                            <CardContent>
 
                             {assignments.length === 0 ? (
                                 <div className="text-center py-12">
-                                    <div className="w-24 h-24 bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <svg className="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                        </svg>
+                                    <div className="w-24 h-24 bg-secondary/50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <FileText className="w-12 h-12 text-muted-foreground" />
                                     </div>
-                                    <h3 className="text-xl font-semibold text-slate-300 mb-2">No assignments yet</h3>
-                                    <p className="text-slate-400 mb-6">Create your first assignment to get started</p>
-                                    <button
-                                        onClick={() => setShowAddForm(true)}
-                                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-all duration-300"
-                                    >
+                                    <h3 className="text-xl font-semibold text-muted-foreground mb-2">No assignments yet</h3>
+                                    <p className="text-muted-foreground mb-6">Create your first assignment to get started</p>
+                                    <Button onClick={() => setShowAddForm(true)}>
                                         Create Assignment
-                                    </button>
+                                    </Button>
                                 </div>
                             ) : (
-                                <div className="space-y-4">
-                                    {assignments.map((assignment) => ( // Removed index, using assignment.id
-                                        <div 
+                                <div className="space-y-3">
+                                    {assignments.map((assignment) => (
+                                        <Card
+                                        key={assignment.id}
                                         onClick={() => {
                                             window.location.href = `/dashboard/${assignment.id}`;
                                         }}
-                                        key={assignment.id} className="group bg-slate-700/30 border border-slate-600/30 rounded-xl p-6 hover:bg-slate-700/40 hover:border-slate-600/50 transition-all duration-300">
-                                            <div className="flex items-start justify-between">
-                                                <div className="flex-1">
-                                                    <h3 className="text-lg font-semibold text-white mb-2 group-hover:text-blue-400 transition-colors duration-300">
-                                                        {assignment.name}
-                                                    </h3>
-                                                    <div className="flex items-center gap-4 text-sm">
-                                                        <span className="text-slate-400">•</span>
-                                                        <span className="text-slate-400">{new Date(assignment.date_created).toLocaleString()}</span>
+                                        className="group cursor-pointer bg-secondary/30 border-border/30 hover:bg-secondary/50 hover:border-border/60 transition-all duration-300">
+                                            <CardContent className="p-5">
+                                                <div className="flex items-start justify-between">
+                                                    <div className="flex-1">
+                                                        <h3 className="text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors duration-300">
+                                                            {assignment.name}
+                                                        </h3>
+                                                        <div className="flex items-center gap-4 text-sm">
+                                                            <span className="text-muted-foreground">•</span>
+                                                            <span className="text-muted-foreground">{new Date(assignment.date_created).toLocaleString()}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setEditingAssignment(assignment);
+                                                                setNewTitle(assignment.name);
+                                                            }}
+                                                        >
+                                                            <Pencil className="w-4 h-4 text-muted-foreground" />
+                                                        </Button>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={async (e) => {
+                                                                e.stopPropagation();
+                                                                setIsDeletingAssignment(true);
+                                                                const res = await fetch("/api/DeleteAssignment", {
+                                                                    method: "POST",
+                                                                    headers: {"Content-Type": "application/json"},
+                                                                    body: JSON.stringify({
+                                                                        name: assignment.name,
+                                                                        level: assignment.level,
+                                                                        subject: assignment.subject, 
+                                                                    }),
+                                                                });
+
+                                                                const data = await res.json();
+
+                                                                if (data.error) {
+                                                                    alert("Error adding assignment: " + data.error);
+                                                                } else {
+                                                                    setAssignments((prev) => 
+                                                                        prev.filter((a) => 
+                                                                            !(
+                                                                                a.name === assignment.name
+                                                                                && a.level === assignment.level
+                                                                                && a.subject === assignment.subject
+                                                                            )
+                                                                        ),
+                                                                    );
+                                                                }
+                                                                setIsDeletingAssignment(false);
+                                                            }}
+                                                        >
+                                                            <Trash2 className="w-4 h-4 text-muted-foreground" />
+                                                        </Button>
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                    <button 
-                                                    onClick={(e) => {
-                                                        e.stopPropagation(); // Prevent navigation
-                                                        setEditingAssignment(assignment);
-                                                        setNewTitle(assignment.name);
-                                                    }}
-                                                    className="p-2 hover:bg-slate-600/50 rounded-lg transition-colors duration-200">
-                                                        <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                        </svg>
-                                                    </button>
-                                                    <button className="p-2 hover:bg-slate-600/50 rounded-lg transition-colors duration-200">
-                                                        <svg
-                                                        onClick={async (e) => {
-                                                            e.stopPropagation();
-                                                            setIsDeletingAssignment(true);
-                                                            const res = await fetch("/api/DeleteAssignment", {
-                                                                method: "POST",
-                                                                headers: {"Content-Type": "application/json"},
-                                                                body: JSON.stringify({
-                                                                    name: assignment.name,
-                                                                    level: assignment.level,
-                                                                    subject: assignment.subject, 
-                                                                }),
-                                                            });
-
-                                                            const data = await res.json();
-
-                                                            if (data.error) {
-                                                                alert("Error adding assignment: " + data.error);
-                                                            } else {
-                                                                setAssignments((prev) => 
-                                                                    prev.filter((a) => 
-                                                                        !(
-                                                                            a.name === assignment.name
-                                                                            && a.level === assignment.level
-                                                                            && a.subject === assignment.subject
-                                                                        )
-                                                                    ),
-                                                                );
-                                                            }
-                                                            setIsDeletingAssignment(false);
-                                                            }}
-                                                            className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                        </svg>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
+                                            </CardContent>
+                                        </Card>
                                     ))}
                                 </div>
                             )}
-                        </div>
+                            </CardContent>
+                        </Card>
                     </div>
                 )}
             </SignedIn>
 
-            {showAddForm && (
-                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-slate-800/90 backdrop-blur-md border border-slate-700/50 rounded-2xl shadow-2xl w-full max-w-md relative">
-                        <div className="p-8">
-                            <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-                                <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                </svg>
-                                Add New Assignment
-                            </h3>
+            <Dialog open={showAddForm} onOpenChange={setShowAddForm}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <Plus className="w-5 h-5 text-primary" />
+                            Add New Assignment
+                        </DialogTitle>
+                        <DialogDescription>
+                            Create a new assignment for your students
+                        </DialogDescription>
+                    </DialogHeader>
 
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-300 mb-2">Assignment Title</label>
-                                    <input
-                                        type="text"
-                                        placeholder="Enter assignment title"
-                                        value={newTitle}
-                                        onChange={(e) => setNewTitle(e.target.value)}
-                                        className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300"
-                                    />
-                                </div>
-                            </div>
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-300 mb-2">Assignment Score</label>
-                                    <input
-                                        type="number"
-                                        placeholder="Enter score"
-                                        value={totalScore}
-                                        onChange={(e) => setTotalScore(e.target.value)}
-                                        className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="flex justify-end gap-3 mt-8">
-                                <button
-                                    onClick={() => setShowAddForm(false)}
-                                    className="px-6 py-3 bg-slate-600/50 hover:bg-slate-600/70 text-white rounded-xl font-semibold transition-all duration-300 border border-slate-500/50"
-                                >
-                                    Cancel
-                                </button>
-
-                                <button
-                                    onClick={async () => {
-
-                                        if (!newTitle.trim()) {
-                                            alert("Title Required")
-                                            return;
-                                        }
-
-                                        setIsAddingAssignment(true);
-                                        const res = await fetch("/api/NewAssignment", {
-                                            method: "POST",
-                                            headers: {"Content-Type": "application/json"},
-                                            body: JSON.stringify({
-                                                name: newTitle,
-                                                totalScore: totalScore,
-                                            }),
-                                        });
-
-                                        const data = await res.json();
-
-                                        if (data.error) {
-                                            alert("Error adding assignment: " + data.error);
-                                        } else {
-                                            // Assuming your API returns the newly created assignment with an ID
-                                            // For now, we'll simulate an ID if not returned.
-                                            setAssignments((prev) => [
-                                                ...prev,
-                                                {
-                                                    id: data.id || Date.now(), // Use ID from API or a temporary one
-                                                    name: newTitle,
-                                                    level: level,
-                                                    subject: subject,
-                                                    date_created: new Date().toISOString(),
-                                                    totalScore: totalScore,
-                                                },
-                                            ]);
-                                            setNewTitle('');
-                                            setLevel('');
-                                            setSubject('');
-                                            setShowAddForm(false);
-                                            setTotalScore(10);
-                                        }
-                                        setIsAddingAssignment(false);
-
-                                    }}
-                                    className="group px-6 py-3 bg-gradient-to-r disabled:opacity-50 from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl relative overflow-hidden"
-                                    disabled={isAddingAssignment}
-                                >
-                                    <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                    <span className="relative">Create Assignment</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-
-            {editingAssignment && (
-                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                    <div className="bg-slate-800/90 backdrop-blur-md border border-slate-700/50 rounded-2xl shadow-2xl w-full max-w-md relative">
-                    <div className="p-8">
-                        <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-                        <svg className="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                        Edit Assignment
-                        </h3>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-2">Assignment Title</label>
-                                <input
-                                type="text"
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="title">Assignment Title</Label>
+                            <Input
+                                id="title"
                                 placeholder="Enter assignment title"
                                 value={newTitle}
                                 onChange={(e) => setNewTitle(e.target.value)}
-                                className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300"
-                                />
-                            </div>
+                            />
                         </div>
-                
-                        <div className="flex justify-end gap-3 mt-8">
-                        <button
-                            onClick={() => setEditingAssignment(null)}
-                            className="px-6 py-3 bg-slate-600/50 hover:bg-slate-600/70 text-white rounded-xl font-semibold transition-all duration-300 border border-slate-500/50"
-                        >
+                        <div className="space-y-2">
+                            <Label htmlFor="score">Assignment Score</Label>
+                            <Input
+                                id="score"
+                                type="number"
+                                placeholder="Enter score"
+                                value={totalScore}
+                                onChange={(e) => setTotalScore(e.target.value)}
+                            />
+                        </div>
+                    </div>
+
+                    <DialogFooter>
+                        <Button variant="secondary" onClick={() => setShowAddForm(false)}>
                             Cancel
-                        </button>
-                
-                        <button
+                        </Button>
+                        <Button
+                            disabled={isAddingAssignment}
+                            onClick={async () => {
+                                if (!newTitle.trim()) {
+                                    alert("Title Required")
+                                    return;
+                                }
+
+                                setIsAddingAssignment(true);
+                                const res = await fetch("/api/NewAssignment", {
+                                    method: "POST",
+                                    headers: {"Content-Type": "application/json"},
+                                    body: JSON.stringify({
+                                        name: newTitle,
+                                        totalScore: totalScore,
+                                    }),
+                                });
+
+                                const data = await res.json();
+
+                                if (data.error) {
+                                    alert("Error adding assignment: " + data.error);
+                                } else {
+                                    setAssignments((prev) => [
+                                        ...prev,
+                                        {
+                                            id: data.id || Date.now(),
+                                            name: newTitle,
+                                            level: level,
+                                            subject: subject,
+                                            date_created: new Date().toISOString(),
+                                            totalScore: totalScore,
+                                        },
+                                    ]);
+                                    setNewTitle('');
+                                    setLevel('');
+                                    setSubject('');
+                                    setShowAddForm(false);
+                                    setTotalScore(10);
+                                }
+                                setIsAddingAssignment(false);
+                            }}
+                        >
+                            Create Assignment
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+
+            <Dialog open={!!editingAssignment} onOpenChange={(open) => { if (!open) setEditingAssignment(null); }}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                            <Pencil className="w-5 h-5 text-yellow-400" />
+                            Edit Assignment
+                        </DialogTitle>
+                        <DialogDescription>
+                            Update the assignment details
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="edit-title">Assignment Title</Label>
+                            <Input
+                                id="edit-title"
+                                placeholder="Enter assignment title"
+                                value={newTitle}
+                                onChange={(e) => setNewTitle(e.target.value)}
+                            />
+                        </div>
+                    </div>
+
+                    <DialogFooter>
+                        <Button variant="secondary" onClick={() => setEditingAssignment(null)}>
+                            Cancel
+                        </Button>
+                        <Button
+                            disabled={isEditingAssignment}
                             onClick={async () => {
                                 if (!newTitle.trim()) {
                                     alert("Title Required");
                                     return;
                                 }
 
-                                setIsEditingAssignment(true); // Set loading state for editing
+                                setIsEditingAssignment(true);
                                 try {
-                                    const res = await fetch("/api/EditAssignment", { // Correct API endpoint
+                                    const res = await fetch("/api/EditAssignment", {
                                         method: "POST",
                                         headers: { "Content-Type": "application/json" },
                                         body: JSON.stringify({
-                                            id: editingAssignment.id, // Send the ID of the assignment
+                                            id: editingAssignment.id,
                                             name: newTitle,
                                         }),
                                     });
@@ -466,26 +434,21 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                             )
                                         );
                                         setNewTitle('');
-                                        setEditingAssignment(null); // Close the edit form
+                                        setEditingAssignment(null);
                                     }
                                 } catch (err) {
                                     console.error("Error updating assignment:", err);
                                     alert("An unexpected error occurred. Please try again.");
                                 } finally {
-                                    setIsEditingAssignment(false); // Reset loading state
+                                    setIsEditingAssignment(false);
                                 }
                             }}
-                            className="group px-6 py-3 bg-gradient-to-r disabled:opacity-50 from-yellow-600 to-yellow-700 hover:from-yellow-700 hover:to-yellow-800 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl relative overflow-hidden"
-                            disabled={isEditingAssignment} // Disable button during API call
                         >
-                            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            <span className="relative">Save Changes</span>
-                        </button>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-            )}
+                            Save Changes
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
