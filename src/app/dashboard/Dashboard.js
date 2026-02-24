@@ -310,6 +310,7 @@ export default function TeacherDashboardPage({serverAssignments}) {
                             <Input
                                 id="score"
                                 type="number"
+                                min="1"
                                 placeholder="Enter score"
                                 value={totalScore}
                                 onChange={(e) => setTotalScore(e.target.value)}
@@ -326,6 +327,12 @@ export default function TeacherDashboardPage({serverAssignments}) {
                             onClick={async () => {
                                 if (!newTitle.trim()) {
                                     alert("Title Required")
+                                    return;
+                                }
+
+                                const scoreNum = Number(totalScore);
+                                if (!totalScore || isNaN(scoreNum) || scoreNum <= 0) {
+                                    alert("Score must be greater than 0")
                                     return;
                                 }
 
