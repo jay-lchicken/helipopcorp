@@ -1,10 +1,11 @@
-import { ClerkProvider, SignedIn, SignOutButton } from "@clerk/nextjs";
+import { ClerkProvider, SignedIn, SignedOut } from "@clerk/nextjs";
 import "../globals.css";
-import { Button } from "@/components/ui/button";
-import { LogOut } from "lucide-react";
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
+import { Separator } from "@/components/ui/separator";
 
 export const metadata = {
-  title: "KLC IDE",
+  title: "KLC IDE - Teacher Dashboard",
   description: "Powered by Clerk and Monaco",
 };
 
@@ -13,8 +14,8 @@ export default function RootLayout({ children }) {
   return (
     <ClerkProvider
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
-      afterSignInUrl="/ide"
-      afterSignUpUrl="/ide"
+      afterSignInUrl="/dashboard"
+      afterSignUpUrl="/dashboard"
     >
       <html lang="en" suppressHydrationWarning>
         <head>
@@ -22,17 +23,24 @@ export default function RootLayout({ children }) {
           <link rel="dns-prefetch" href="https://api.clerk.dev" />
         </head>
         <body suppressHydrationWarning>
-            <SignedIn>
-                <div className="absolute top-4 right-4 z-50">
-                <SignOutButton redirectUrl="/dashboard">
-                    <Button variant="default" size="sm">
-                      <LogOut className="w-4 h-4" />
-                      Sign Out
-                    </Button>
-                </SignOutButton>
+          <SignedOut>
+            {children}
+          </SignedOut>
+          <SignedIn>
+            <SidebarProvider>
+              <AppSidebar role="teacher" />
+              <SidebarInset>
+                <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+                  <SidebarTrigger className="-ml-1" />
+                  <Separator orientation="vertical" className="mr-2 h-4" />
+                  <span className="text-sm font-medium">Teacher Dashboard</span>
+                </header>
+                <div className="flex-1 overflow-auto">
+                  {children}
                 </div>
-            </SignedIn>
-          {children}
+              </SidebarInset>
+            </SidebarProvider>
+          </SignedIn>
         </body>
       </html>
     </ClerkProvider>

@@ -24,6 +24,15 @@
     --input: 215 20% 30%;
     --ring: 217 91% 60%;
     --radius: 0.75rem;
+
+    --sidebar-background: 215 28% 14%;
+    --sidebar-foreground: 0 0% 95%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 215 20% 22%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 215 20% 25%;
+    --sidebar-ring: 217 91% 60%;
   }
 
   @media (prefers-color-scheme: dark) {

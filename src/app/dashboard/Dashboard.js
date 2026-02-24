@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { Plus, Pencil, Trash2, FileText, LogIn, UserPlus, Terminal } from "lucide-react";
+import { Plus, Pencil, Trash2, FileText, LogIn, UserPlus } from "lucide-react";
 
 const AssignmentList = React.memo(({ assignments, onEdit, onDelete }) => (
   <div className="space-y-3">
@@ -85,9 +85,9 @@ export default function TeacherDashboardPage({serverAssignments}) {
     }, []);
 
     return (
-        <div className="min-h-screen text-foreground px-6 py-8">
+        <div className="text-foreground p-6">
             <SignedOut>
-                <div className="flex flex-col items-center justify-center min-h-screen text-center">
+                <div className="flex flex-col items-center justify-center min-h-[80vh] text-center">
                     <div className="relative group mb-8">
                         <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 transform scale-110"></div>
                         <Card className="border-border/50 bg-card/30 backdrop-blur-sm shadow-2xl">
@@ -121,7 +121,7 @@ export default function TeacherDashboardPage({serverAssignments}) {
 
             <SignedIn>
                 {!user ? (
-                    <div className="flex items-center justify-center min-h-screen">
+                    <div className="flex items-center justify-center min-h-[60vh]">
                         <div className="text-center">
                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
                             <p className="text-muted-foreground text-lg">Loading your dashboard...</p>
@@ -182,10 +182,6 @@ export default function TeacherDashboardPage({serverAssignments}) {
                                         </Badge>
                                     </div>
                                     <div className="flex flex-row space-x-3">
-                                        <Button onClick={() => router.push('/ide')}>
-                                            <Terminal className="w-4 h-4" />
-                                            Go to IDE
-                                        </Button>
                                         <Button onClick={() => setShowAddForm(true)}>
                                             <Plus className="w-4 h-4" />
                                             Add Assignment

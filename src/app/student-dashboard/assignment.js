@@ -1,34 +1,27 @@
 'use client';
 
-import {useEffect, useState, useCallback} from 'react';
+import {useEffect, useState} from 'react';
 import {SignedIn, SignedOut, SignInButton, SignUpButton, useUser} from '@clerk/nextjs';
 import React from 'react';
-import {useRouter} from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { LogIn, UserPlus, Terminal, FileText } from "lucide-react";
+import { LogIn, UserPlus, FileText } from "lucide-react";
 
 
 export default function StudentDashboardPage({serverSubmissions}) {
     const {user} = useUser();
-    const router = useRouter();
-    const [editingSubmission, setEditingSubmission] = useState(null);
-    const [newTitle, setNewTitle] = useState('');
     const [submissions, setSubmissions] = useState(serverSubmissions || []);
     const [isLoaded, setIsLoaded] = useState(false);
-    const [isDeletingSubmission, setIsDeletingSubmission] = useState(false);
-    const [isEditingSubmission, setIsEditingSubmission] = useState(false);
-    const [totalScore, setTotalScore] = useState('');
     useEffect(() => {
         setIsLoaded(true);
     }, []);
 
     return (
-        <div className="min-h-screen text-foreground px-6 py-8">
+        <div className="text-foreground p-6">
             <SignedOut>
-                <div className="flex flex-col items-center justify-center min-h-screen text-center">
+                <div className="flex flex-col items-center justify-center min-h-[80vh] text-center">
                     <div className="relative group mb-8">
                         <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary/10 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500 transform scale-110"></div>
                         <Card className="border-border/50 bg-card/30 backdrop-blur-sm shadow-2xl">
@@ -62,7 +55,7 @@ export default function StudentDashboardPage({serverSubmissions}) {
 
             <SignedIn>
                 {!user ? (
-                    <div className="flex items-center justify-center min-h-screen">
+                    <div className="flex items-center justify-center min-h-[60vh]">
                         <div className="text-center">
                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
                             <p className="text-muted-foreground text-lg">Loading your dashboard...</p>
@@ -106,10 +99,6 @@ export default function StudentDashboardPage({serverSubmissions}) {
                                             {submissions.length} total
                                         </Badge>
                                     </div>
-                                    <Button onClick={() => router.push('/ide')}>
-                                        <Terminal className="w-4 h-4" />
-                                        Go to IDE
-                                    </Button>
                                 </div>
                             </CardHeader>
                             <CardContent>
