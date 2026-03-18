@@ -35,6 +35,8 @@ NEXT_PUBLIC_URL=http://localhost:3000
 # Get these from your Clerk dashboard
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 CLERK_SECRET_KEY=
+# Optional: override ClerkJS script URL if latest download fails on your network
+NEXT_PUBLIC_CLERK_JS_URL=https://unpkg.com/@clerk/clerk-js@latest/dist/clerk.browser.js
 
 # PostgreSQL Database Connection String
 DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DATABASE"
