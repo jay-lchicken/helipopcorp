@@ -4,8 +4,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import Script from "next/script";
 import {SignedIn, SignedOut, useUser, SignInButton, SignUpButton, useClerk} from "@clerk/nextjs";
-import "xterm/css/xterm.css";
-import { getAllJSDocTagsOfKind } from "typescript";
+import TerminalOutput from "@/components/TerminalOutput";
 
 // Judge0 Language mappings
 const JUDGE0_LANGUAGES = {
@@ -71,12 +70,11 @@ export default function IDE() {
   const { isSignedIn } = useUser();
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
-  const termRef = useRef(null);
   const xtermRef = useRef(null);
   const [stdin, setStdin] = useState("");
   const [isEditorLoaded, setIsEditorLoaded] = useState(false);
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
-  const [isTerminalReady, setIsTerminalReady] = useState(false);
+  const [isTerminalReady, setIsTerminalReady] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -132,7 +130,7 @@ export default function IDE() {
         smoothScrolling: true,
       });
       setIsEditorLoaded(true);
-      if (isTerminalReady) setIsLoading(false);
+      setIsLoading(false);
     });
   }, [isSignedIn, isEditorLoaded, isScriptLoaded, isTerminalReady, selectedLanguage, selectedTheme, clerk.loaded]);
 
@@ -153,34 +151,7 @@ export default function IDE() {
     }
   };
 
-  useEffect(() => {
-    async function setupTerminal() {
-      if (typeof window !== "undefined" && termRef.current && !xtermRef.current) {
-        const { Terminal } = await import("xterm");
-        xtermRef.current = new Terminal({
-          cols: 80,
-          rows: 15,
-          theme: {
-            background: "#1a1a1a",
-            foreground: "#e0e0e0",
-            cursor: "#00ff00",
-            cursorAccent: "#00ff00",
-            selection: "rgba(255, 255, 255, 0.3)",
-          },
-          disableStdin: true,
-          fontFamily: '"Fira Mono", "Monaco", "Consolas", monospace',
-          fontSize: 13,
-          lineHeight: 1.2,
-          cursorBlink: true,
-        });
-        xtermRef.current.open(termRef.current);
-        xtermRef.current.write("🚀 \x1b[32mTerminal ready\x1b[0m - KLC IDE v1.0\r\n");
-        setIsTerminalReady(true);
-        if (isEditorLoaded) setIsLoading(false);
-      }
-    }
-    setupTerminal();
-  }, [termRef, isEditorLoaded]);
+  // Terminal is always ready (custom component)
 
   async function submitToJudge0(code) {
     const res = await fetch("/api/RunCode", {
@@ -437,10 +408,9 @@ export default function IDE() {
                 </div>
 
                 <div className="flex justify-center space-x-4">
-                  <div
-                    ref={termRef}
+                  <TerminalOutput
+                    ref={xtermRef}
                     className="w-1/2 h-64 rounded-xl border border-gray-700/50 shadow-2xl overflow-hidden"
-                    style={{ backgroundColor: "#1a1a1a" }}
                   />
                   <textarea
                     value={stdin}

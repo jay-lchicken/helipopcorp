@@ -12,6 +12,11 @@ export async function POST(req) {
     if (!userId || !email) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const scoreNum = Number(totalScore);
+    if (!totalScore || isNaN(scoreNum) || scoreNum <= 0) {
+        return NextResponse.json({ error: 'Score must be greater than 0' }, { status: 400 });
+    }
     console.log("sessionClaims:", sessionClaims);
     const hash = crypto.createHash('sha256').update(email+userId).digest('hex');
       console.log(email, userId, hash);

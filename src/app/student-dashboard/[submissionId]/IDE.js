@@ -4,9 +4,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import Script from "next/script";
 import { SignedIn, SignedOut, useUser, SignInButton, SignUpButton } from "@clerk/nextjs";
-import { Terminal } from '@xterm/xterm';
-import '@xterm/xterm/css/xterm.css';
-import { getAllJSDocTagsOfKind } from "typescript";
+import TerminalOutput from "@/components/TerminalOutput";
 import {useClerk} from "@clerk/nextjs";
 
 // Judge0 Language mappings
@@ -75,7 +73,6 @@ export default function IDE3({data}) {
 
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
-  const termRef = useRef(null);
   const xtermRef = useRef(null);
   const [stdin, setStdin] = useState("");
   const [themeColours, setThemeColours] = useState({
@@ -87,7 +84,7 @@ export default function IDE3({data}) {
   });
   const [isEditorLoaded, setIsEditorLoaded] = useState(false);
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
-  const [isTerminalReady, setIsTerminalReady] = useState(false);
+  const [isTerminalReady, setIsTerminalReady] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState(63);
@@ -160,7 +157,7 @@ export default function IDE3({data}) {
   });
   setSelectedLanguage(Number(langId));
   setIsEditorLoaded(true);
-  if (isTerminalReady) setIsLoading(false);
+  setIsLoading(false);
 });
 
   }, [isSignedIn, isEditorLoaded, isScriptLoaded, isTerminalReady, selectedLanguage, selectedTheme, clerk.loaded]);
@@ -214,42 +211,10 @@ export default function IDE3({data}) {
     if (monacoRef.current) {
       window.monaco.editor.setTheme(theme);
     }
-    if (isTerminalReady) {
-      updateTheme();
-    }
 
   };
 
-  useEffect(() => {
-    async function setupTerminal() {
-      if (typeof window !== "undefined" && termRef.current && !xtermRef.current) {
-        xtermRef.current = new Terminal({
-          cols: 100,
-          rows: 15,
-          theme: themeColours,
-          disableStdin: true,
-          fontFamily: '"Fira Mono", "Monaco", "Consolas", monospace',
-          fontSize: 13,
-          lineHeight: 1.2,
-          cursorBlink: true,
-        });
-        xtermRef.current.open(termRef.current);
-        xtermRef.current.write("🚀 \x1b[32mTerminal ready\x1b[0m - KLC IDE v1.0\r\n");
-        setIsTerminalReady(true);
-        if (isEditorLoaded) setIsLoading(false);
-      }
-    }
-    setupTerminal();
-  }, [termRef, isEditorLoaded]);
-
-  const updateTheme = () => {
-    if (xtermRef.current) {
-      xtermRef.current.options.theme = themeColours;
-      xtermRef.current.refresh(0, xtermRef.current.rows - 1);
-    } else {
-      console.warn("xtermRef not ready yet");
-    }
-  };
+  // Terminal is always ready (custom component)
 
   async function submitToJudge0(code) {
     const res = await fetch("/api/RunCode", {
@@ -532,8 +497,8 @@ export default function IDE3({data}) {
                 </div>
 
                 <div className="flex justify-center space-x-4">
-                  <div
-                    ref={termRef}
+                  <TerminalOutput
+                    ref={xtermRef}
                     className="w-1/2 h-64 rounded-xl border border-gray-700/50 shadow-2xl overflow-hidden"
                   />
 
