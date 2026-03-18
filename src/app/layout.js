@@ -2,15 +2,16 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 
+// Pinned fallback URL to avoid runtime breakage from `latest`; override via NEXT_PUBLIC_CLERK_JS_URL when upgrading.
+const DEFAULT_CLERK_JS_URL = "https://unpkg.com/@clerk/clerk-js@5.71.0/dist/clerk.browser.js";
+
 export const metadata = {
   title: "KLC IDE",
   description: "Powered by Clerk and Monaco",
 };
 
 export default function RootLayout({ children }) {
-  const clerkJSUrl =
-    process.env.NEXT_PUBLIC_CLERK_JS_URL ??
-    "https://unpkg.com/@clerk/clerk-js@latest/dist/clerk.browser.js";
+  const clerkJSUrl = process.env.NEXT_PUBLIC_CLERK_JS_URL ?? DEFAULT_CLERK_JS_URL;
 
   return (
     <html lang="en" suppressHydrationWarning>
