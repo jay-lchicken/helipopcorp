@@ -340,7 +340,7 @@ export default function IDE() {
                   )}
                 </button>
 
-                {assignmentId !== "IDE" ? (
+                {assignmentId !== "4" ? (
                   <button
                     className={`px-6 py-2 bg-gradient-to-r from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 ${
                       isSubmitting ? 'animate-pulse' : ''
